@@ -1,0 +1,391 @@
+<!doctype html><html lang="hu"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"></head><body><title>Anaria Balance · átalányadó</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500&display=swap">
+<style>
+/* Layout: egyoszlopos ügyfélkivonat – következő befizetés, kulcsszámok, keretek, havi diagram, negyedéves bontás, nyitott számlák */
+:root{
+  --bg:#f4f6f7; --surface:#ffffff; --ink:#15232b; --ink-2:#4a5a63; --muted:#76858d;
+  --line:#dde3e6; --accent:#1d5d6b; --accent-soft:#dbe9ec; --warn:#9c4f17; --warn-soft:#f6e7d9; --good:#2e6b3f; --good-soft:#e1efe4;
+  --f-display:"Newsreader", Georgia, "Times New Roman", serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-num:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f171b; --surface:#16222a; --ink:#e5ecef; --ink-2:#a9b8bf; --muted:#7f9098;
+  --line:#26363f; --accent:#6cb6c4; --accent-soft:#1c3940; --warn:#e3a06a; --warn-soft:#3a2a1d; --good:#7cc08e; --good-soft:#1c3324; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f171b; --surface:#16222a; --ink:#e5ecef; --ink-2:#a9b8bf; --muted:#7f9098;
+  --line:#26363f; --accent:#6cb6c4; --accent-soft:#1c3940; --warn:#e3a06a; --warn-soft:#3a2a1d; --good:#7cc08e; --good-soft:#1c3324; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:28px 48px}
+.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:32px}
+.firm{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:500;font-size:clamp(28px,5vw,40px);line-height:1.12;margin:4px 0 6px;text-wrap:balance}
+h2{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);font-weight:600;margin:0 0 6px}
+.lead{color:var(--ink-2);margin:0 0 14px;max-width:68ch;font-size:14.5px}
+.sub{color:var(--ink-2);margin:0}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.lock{max-width:380px;margin:12vh auto 0;display:flex;flex-direction:column;gap:16px}
+.lock form{display:flex;flex-direction:column;gap:10px}
+.lock label{font-size:13px;color:var(--ink-2)}
+.lock input{font:inherit;font-family:var(--f-num);padding:11px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+input:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:inherit;font-weight:600;padding:11px 14px;border:0;border-radius:6px;background:var(--accent);color:var(--surface);cursor:pointer}
+.bankmiss{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:8px;border:1px solid var(--line);border-left:4px solid var(--warn);background:var(--warn-soft);font-size:14px}
+.bankmiss b{color:var(--warn)}
+.bankmiss.ok{border-left-color:var(--good);background:var(--good-soft)}
+.bankmiss.ok b{color:var(--good)}
+.err{color:var(--warn);font-size:14px;min-height:1.4em;margin:0}
+.note{font-size:13px;color:var(--muted)}
+/* next payment */
+.next{display:grid;grid-template-columns:1fr auto;gap:6px 24px;align-items:end;padding:20px 22px;background:var(--accent-soft);border-radius:10px}
+.next .lbl{font-size:13px;color:var(--ink-2);grid-column:1/-1}
+.next .date{font-family:var(--f-display);font-size:clamp(24px,4.4vw,32px);line-height:1.1}
+.next .amt{font-family:var(--f-num);font-size:clamp(22px,4vw,28px);font-weight:500;text-align:right;white-space:nowrap}
+.next .det{grid-column:1/-1;font-size:13.5px;color:var(--ink-2);margin:4px 0 0}
+@media (max-width:520px){.next{grid-template-columns:1fr}.next .amt{text-align:left}}
+/* monthly contribution */
+.pay{display:flex;flex-direction:column;gap:12px;margin-top:-14px}
+.pcard{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:16px 22px;display:flex;flex-direction:column;gap:10px}
+.pcard .t{font-weight:600;font-size:15px}
+.pcard p{margin:0;font-size:13.5px;color:var(--ink-2);max-width:70ch}
+.prow{display:grid;grid-template-columns:minmax(110px,1fr) 140px 250px;gap:4px 18px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.prow .lbl{font-size:14px}
+.prow .amt{font-family:var(--f-num);font-size:17px;font-weight:500;white-space:nowrap;text-align:right}
+.prow.sum .lbl{font-weight:600}
+.prow.sum .amt{font-size:20px}
+.acct{display:flex;align-items:center;gap:8px;justify-content:flex-end;min-width:0}
+.acct code{font-family:var(--f-num);font-size:13px;color:var(--ink-2);user-select:all;white-space:nowrap}
+.cp{font:inherit;font-size:12px;font-weight:600;padding:4px 9px;border-radius:5px;background:var(--accent-soft);color:var(--accent);border:0;cursor:pointer}
+.memo{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:13px;color:var(--ink-2)}
+.memo code{font-family:var(--f-num);color:var(--ink);user-select:all}
+.qd summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:14px}
+.qlist{display:flex;flex-direction:column;margin-top:8px}
+.qrow{display:grid;grid-template-columns:minmax(120px,1fr) 140px 250px;gap:4px 18px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
+.qrow small{color:var(--muted);font-size:12px}
+.qrow .amt{font-family:var(--f-num);text-align:right;white-space:nowrap}
+.qrow .due{font-size:12.5px;color:var(--ink-2);text-align:right}
+@media (max-width:620px){.qrow{grid-template-columns:1fr auto}.qrow .due{grid-column:1/-1;text-align:left}}
+@media (max-width:620px){.prow{grid-template-columns:1fr auto}.prow .acct{grid-column:1/-1;justify-content:flex-start}}
+/* tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.tile{background:var(--surface);padding:16px 18px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.tile .k{font-size:13px;color:var(--ink-2);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tile .v{font-family:var(--f-num);font-size:21px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tile .h{font-size:12.5px;color:var(--muted)}
+.pill{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:99px;background:var(--warn-soft);color:var(--warn)}
+.pill.ok{background:var(--good-soft);color:var(--good)}
+/* meters */
+.meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+.meter{display:flex;flex-direction:column;gap:8px;min-width:0}
+.meter .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.meter .t{font-weight:600;font-size:14.5px}
+.meter .top .num{font-size:12.5px;color:var(--ink-2)}
+.bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:5px}
+.bar i.over{background:var(--warn)}
+.meter p{margin:0;font-size:13.5px;color:var(--ink-2)}
+/* chart */
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;padding:6px 9px;border-radius:5px;white-space:nowrap;transform:translate(-50%,-115%)}
+/* tables */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:12px;font-weight:600;color:var(--ink-2);letter-spacing:.02em;background:var(--bg)}
+td{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+td.lbl{font-family:var(--f-body)}
+td.txt{font-family:var(--f-body);white-space:normal;min-width:150px;text-align:left}
+td small{display:block;font-family:var(--f-body);font-size:11.5px;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+tfoot td{font-weight:600;background:var(--bg);border-top:1px solid var(--line);border-bottom:0}
+.two{display:grid;gap:22px}
+.qx{font:inherit;font-weight:500;background:none;border:0;padding:0;color:var(--accent);cursor:pointer;display:inline-flex;gap:6px;align-items:baseline;text-align:left}
+.qx::before{content:"▸";font-size:11px;transition:transform .15s;display:inline-block}
+.qx[aria-expanded="true"]::before{transform:rotate(90deg)}
+tr.mr td{background:var(--bg);font-size:13.5px;color:var(--ink-2)}
+tr.mr td.lbl{padding-left:30px}
+tr.ml > td{background:var(--bg);padding:4px 12px 12px 48px}
+.il{width:100%;border-collapse:collapse;font-size:12.5px}
+.il th,.il td{padding:4px 8px;text-align:right;border-bottom:1px solid var(--line);font-weight:400;color:var(--ink-2)}
+.il th{font-size:11.5px;color:var(--muted)}
+.il th:nth-child(-n+2),.il td:nth-child(-n+2){text-align:left}
+.il td.v{white-space:normal}
+.il tfoot td{text-align:left;color:var(--warn);border-bottom:0}
+@media (max-width:640px){tr.ml > td{padding-left:12px}.il th:nth-child(3),.il td:nth-child(3){display:none}}
+.mark{color:var(--warn)}
+@media (max-width:560px){.hide-n{display:none}}
+h3{font-size:14px;font-weight:600;margin:0 0 8px;color:var(--ink)}
+h3.gap{margin-top:22px}
+.foot{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:18px}
+.foot p{margin:0;max-width:72ch}
+.foot strong{color:var(--ink-2)}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .6s ease}}
+</style>
+
+<div id="lock" class="lock">
+  <div>
+    <div class="firm">Anaria Balance Kft.</div>
+    <h1>2026. évi átalányadó-összesítés</h1>
+    <p class="sub"><b>Átalányadó-összesítés</b></p>
+    <p class="sub">Ez az oldal jelszóval védett. A jelszót e-mailben küldtük el neked.</p>
+  </div>
+  <form id="f" autocomplete="off">
+    <label for="pw">Jelszó</label>
+    <input id="pw" type="password" inputmode="numeric" autocomplete="current-password" required>
+    <button type="submit" id="go">Megnyitás</button>
+    <p class="err" id="err" role="alert"></p>
+  </form>
+  <p class="note">Az adatok titkosítva vannak, és csak a te böngésződben nyílnak meg a jelszóval.</p>
+</div>
+
+<main id="app" class="wrap" hidden></main>
+
+<script>
+const PAYLOAD = {"salt": "rLGIzdRR35Fh7gdrhosp7g==", "iv": "nbJng4rfZezQaHgZ", "iter": 600000, "ct": "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"};
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function decrypt(pw){
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey({name:"PBKDF2", salt:b64(PAYLOAD.salt), iterations:PAYLOAD.iter, hash:"SHA-256"}, base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+  const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv:b64(PAYLOAD.iv)}, key, b64(PAYLOAD.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+document.getElementById("f").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = document.getElementById("go"), err = document.getElementById("err");
+  btn.disabled = true; btn.textContent = "Megnyitás…"; err.textContent = "";
+  let data;
+  try { data = await decrypt(document.getElementById("pw").value.trim()); }
+  catch(x){ err.textContent = "Hibás jelszó. Ellenőrizd a kis- és nagybetűket, majd próbáld újra."; btn.disabled = false; btn.textContent = "Megnyitás"; return; }
+  render(data);
+});
+
+const nf = n => Math.round(n).toLocaleString("hu-HU").replace(/ /g," ");
+const ft = n => nf(n) + " Ft";
+const HU_M = ["jan.","febr.","márc.","ápr.","máj.","jún.","júl.","aug.","szept.","okt.","nov.","dec."];
+const HU_MF = ["január","február","március","április","május","június","július","augusztus","szeptember","október","november","december"];
+const inMonth = i => HU_MF[i] + (i>=8 ? "ben" : "ban");
+const hd = s => s ? s.replace(/-/g,". ")+"." : "–";
+const hdLong = s => { if(!s) return "–"; const [y,m,d] = s.split("-"); return `${y}. ${HU_MF[+m-1]} ${+d}.`; };
+const QN = ["I.","II.","III.","IV."];
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function bankBlock(d){
+  if (!d.bank_missing) return "";
+  if (!d.bank_missing.length) return `<section class="bankmiss ok" role="note"><b>✓ Minden bankszámlakivonat megérkezett</b><span>Köszönjük! A befolyt bevételt a kivonatok alapján ellenőriztük.</span></section>`;
+  const HM=["január","február","március","április","május","június","július","augusztus","szeptember","október","november","december"];
+  const ms=d.bank_missing.map(k=>HM[+k.slice(5,7)-1]).join(", ");
+  return `<section class="bankmiss" role="note"><b>Hiányzó bankszámlakivonat: ${ms}</b><span>Kérjük, küldd meg a kivonatokat részünkre – a kivonat nélkül nem tudjuk ellenőrizni, mely számláid folytak be, így a bevétel és az adó is pontatlan lehet.</span></section>`;
+}
+function render(d){
+  const mInv = i => (d.paid||[]).filter(p => +p.paid.slice(5,7)-1 === i);
+  const mList = m => { const L = mInv(m.i); if (!L.length) return "";
+    const sum = L.reduce((a,p)=>a+p.osszeg,0), diff = Math.round(m.rev - sum);
+    return `<tr class="ml" data-q="${m.q}" data-m="${m.i}" hidden><td colspan="7"><table class="il"><thead><tr><th>Számla</th><th>Vevő</th><th>Kelte</th><th>Befolyt</th><th>Összeg</th></tr></thead><tbody>${L.map(p=>`<tr><td>${esc(p.no)}</td><td class="v">${esc(p.vevo)}</td><td>${hd(p.kelte)}</td><td>${hd(p.paid)}</td><td>${nf(p.osszeg)} Ft</td></tr>`).join("")}</tbody>${diff?`<tfoot><tr><td colspan="5">A havi összeg a munkafüzetben kézzel van megadva (${nf(m.rev)} Ft), ez ${nf(Math.abs(diff))} Ft-tal ${diff>0?"több":"kevesebb"}, mint a számlák összege.</td></tr></tfoot>`:""}</table></td></tr>`; };
+  const C = d.calc, P = d.params, ktgPct = Math.round(d.ktg*100);
+  const hasJar = d.jogallas !== "nyugdijas";
+  const nav = d.nav || {};
+  const navPill = v => v==null ? "" : v>0 ? '<span class="pill">tartozás</span>' : v<0 ? '<span class="pill ok">túlfizetés</span>' : '<span class="pill ok">rendezett</span>';
+  const navVal = v => v==null ? "–" : ft(Math.abs(v));
+  const N = C.next;
+  const freePct = Math.min(100, C.inc/P.mentes*100);
+  const afaPct = C.teljes/C.alanyi*100, hatPct = C.rev/C.bevhatar*100;
+  const curYear = u => (u.telj||"").startsWith(d.year);
+  const cur = d.unpaid.filter(curYear), old = d.unpaid.filter(u=>!curYear(u));
+  const INV = C.months_inv || [];
+  const qInv = q => INV.slice(q*3, Math.min(q*3+3, C.as_m)).reduce((a,v)=>a+v,0);
+  let freeLeft = P.mentes;
+  const MR = C.months.slice(0, C.as_m).map((rev,i)=>{ const inc = rev*(1-d.ktg), free = Math.min(inc, Math.max(0, freeLeft)); freeLeft -= free;
+    return {i, q:Math.floor(i/3), inv:INV[i]||0, rev, ktg:rev*d.ktg, inc, free, taxable:inc-free}; });
+
+  const nextBlock = N ? `
+  <section class="next" aria-label="Következő befizetés">
+    <span class="lbl">Következő befizetés · ${QN[N.q]} negyedév${N.in_progress?" (még tart)":""}</span>
+    <span class="date">${hdLong(N.due)}</span>
+    <span class="amt">${N.in_progress?"eddig ":""}${ft(N.total)}</span>
+    <p class="det">${[`SZJA ${ft(N.szja)}`, hasJar?`TB-járulék ${ft(N.tb)}`:"", hasJar?`szocho ${ft(N.szocho)}`:""].filter(Boolean).join(" · ")}.
+    ${N.in_progress ? (N.min_applied ? "A negyedév végéig ez nő, ha több bevétel folyik be. A járulékok a kötelező minimumon vannak, ennél kevesebb nem lesz." : "A negyedév végéig ez nő, ha több bevétel folyik be.") : ""}
+    A pontos összeget és a befizetés módját a negyedév zárása után küldjük.</p>
+  </section>` : "";
+
+  const app = document.getElementById("app");
+  app.innerHTML = `
+  <header>
+    <div class="firm">Anaria Balance Kft. · ${d.year}. évi átalányadó-összesítés</div>
+    <h1>${esc(d.name)}</h1>
+    <p class="sub">Állapot: ${hdLong(d.asOf)} · költséghányad ${ktgPct}% · ${esc(d.jogallas_txt)}</p>
+  </header>
+
+  ${bankBlock(d)}
+
+  ${nextBlock}
+
+  ${payBlock(d, C, hasJar)}
+
+  <section class="tiles" aria-label="Összesítés">
+    <div class="tile"><span class="k">Kiszámlázott bevétel ${d.year}-ban</span><span class="v">${ft(C.teljes)}</span><span class="h">a teljesítés dátuma szerint, a kifizetetlenekkel együtt</span></div>
+    <div class="tile"><span class="k">Befolyt bevétel ${d.year}-ban</span><span class="v">${ft(C.rev)}</span><span class="h">a jóváírás napja szerint</span></div>
+    <div class="tile"><span class="k">Adó és járulék idén eddig</span><span class="v">${ft(C.total)}</span><span class="h">${hasJar?`SZJA ${nf(C.szja)} · TB ${nf(C.tb)} · szocho ${nf(C.szocho)}`:"csak SZJA, nyugdíjasként járulék nincs"}</span></div>
+    <div class="tile"><span class="k">Kifizetetlen számláid</span><span class="v">${ft(C.unpaid)}</span><span class="h">${d.unpaid.length} db, lent részletezve</span></div>
+  </section>
+
+  <section>
+    <h2>Keretek ${d.year}-ban</h2>
+    <p class="lead">Ezek a határok döntik el, mennyi adót fizetsz, és meddig maradhatsz ebben az adózási formában.</p>
+    <div class="meters">
+      <div class="meter">
+        <div class="top"><span class="t">Adómentes jövedelem</span><span class="num">${nf(C.free_used)} / ${nf(P.mentes)}</span></div>
+        <div class="bar" role="img" aria-label="Felhasználva ${Math.round(freePct)}%"><i class="${C.inc>=P.mentes?"over":""}" style="width:${freePct}%"></i></div>
+        <p>${C.inc>=P.mentes
+          ? `${C.crossed!=null?inMonth(C.crossed).replace(/^./,c=>c.toUpperCase())+" ":""}elfogyott, azóta a befolyt jövedelem után adót${hasJar?" és járulékot":""} fizetsz.`
+          : `Még ${ft(P.mentes-C.inc)} jövedelem adómentes, ez kb. ${ft((P.mentes-C.inc)/(1-d.ktg))} bevétel.`}</p>
+      </div>
+      ${d.afa==="alanyi" ? `<div class="meter">
+        <div class="top"><span class="t">Alanyi ÁFA-mentesség</span><span class="num">${nf(C.teljes)} / ${nf(C.alanyi)}</span></div>
+        <div class="bar" role="img" aria-label="Felhasználva ${Math.round(afaPct)}%"><i class="${afaPct>=85?"over":""}" style="width:${Math.min(100,afaPct)}%"></i></div>
+        <p>${C.teljes>=C.alanyi ? "A keret elfogyott. Hívj minket még ma." : afaPct>=85 ? `Már csak ${ft(C.alanyi-C.teljes)} fér bele. Mielőtt újabb nagyobb munkát számlázol, egyeztess velünk.` : `Még ${ft(C.alanyi-C.teljes)} számlázható ÁFA nélkül. Ide az idén teljesített számlák számítanak, a kifizetetlenek is.`}</p>
+      </div>` : ""}
+      <div class="meter">
+        <div class="top"><span class="t">Átalányadó bevételi határa</span><span class="num">${nf(C.rev)} / ${nf(C.bevhatar)}</span></div>
+        <div class="bar" role="img" aria-label="Felhasználva ${Math.round(hatPct)}%"><i class="${hatPct>=85?"over":""}" style="width:${Math.min(100,hatPct)}%"></i></div>
+        <p>${C.start>d.year+"-01-01"?`Mivel ${hdLong(C.start)} kezdtél, a határ időarányos. `:""}${hatPct>=85 ? "Közel jársz a határhoz. Ha átléped, az egész évet újra kell számolni, ezért egyeztess velünk." : `Bőven a határ alatt vagy: még ${ft(C.bevhatar-C.rev)} fér bele idén.`}</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Befolyt bevétel havonta</h2>
+    <p class="lead">Az a hónap számít, amikor a pénz megérkezett, nem a számla kelte.</p>
+    <div class="chart" id="chart"></div>
+  </section>
+
+  <section>
+    <h2>Negyedéves elszámolás</h2>
+    <p class="lead">Az adó a befolyt bevétel után jár: ebből ${ktgPct}% költséghányadot vonunk le, a maradék a jövedelem. Ebből először az évi adómentes rész fogy el, csak a felette lévő rész adózik. A kiszámlázott oszlop a teljesítés dátuma szerinti számlákat mutatja. Kattints a negyedévre a havi bontásért.</p>
+    <div class="two">
+      <div class="tbl"><table>
+        <thead><tr><th>Negyedév</th><th>Kiszámlázott</th><th>Befolyt bevétel</th><th class="hide-n">Költséghányad</th><th>Jövedelem</th><th>Adómentes</th><th>Adóköteles</th></tr></thead>
+        <tbody>${C.quarters.map(Q=>`<tr class="qr"><td class="lbl"><button class="qx" aria-expanded="false" data-q="${Q.q}">${QN[Q.q]} negyedév</button>${Q.in_progress?"<small>folyamatban</small>":""}</td><td>${nf(qInv(Q.q))}</td><td>${nf(Q.rev)}</td><td class="hide-n">${nf(Q.ktg)}</td><td>${nf(Q.inc)}</td><td>${nf(Q.free)}</td><td>${nf(Q.taxable)}</td></tr>${MR.filter(m=>m.q===Q.q).map(m=>`<tr class="mr" data-q="${Q.q}" hidden><td class="lbl">${mInv(m.i).length?`<button class="qx mx" aria-expanded="false" data-m="${m.i}">${HU_MF[m.i]}</button>`:HU_MF[m.i]}</td><td>${nf(m.inv)}</td><td>${nf(m.rev)}</td><td class="hide-n">${nf(m.ktg)}</td><td>${nf(m.inc)}</td><td>${nf(m.free)}</td><td>${nf(m.taxable)}</td></tr>${mList(m)}`).join("")}`).join("")}</tbody>
+        <tfoot><tr><td class="lbl">Összesen</td><td>${nf(C.quarters.reduce((a,Q)=>a+qInv(Q.q),0))}</td><td>${nf(C.rev)}</td><td class="hide-n">${nf(C.rev*d.ktg)}</td><td>${nf(C.inc)}</td><td>${nf(C.free_used)}</td><td>${nf(C.quarters.reduce((a,Q)=>a+Q.taxable,0))}</td></tr></tfoot>
+      </table></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Negyedév</th><th>SZJA 15%</th>${hasJar?"<th>TB-járulék 18,5%</th><th>Szocho 13%</th>":""}<th>Fizetendő</th><th>Határidő</th></tr></thead>
+        <tbody>${C.quarters.map(Q=>`<tr><td class="lbl">${QN[Q.q]} negyedév${Q.in_progress?"<small>eddig</small>":""}</td><td>${nf(Q.szja)}</td>${hasJar?`<td>${nf(Q.tb)}${Q.min_applied?'<small>minimum</small>':""}</td><td>${nf(Q.szocho)}${Q.min_applied?'<small>minimum</small>':""}</td>`:""}<td><b>${nf(Q.total)}</b></td><td>${hd(Q.due)}</td></tr>`).join("")}</tbody>
+        <tfoot><tr><td class="lbl">Összesen</td><td>${nf(C.szja)}</td>${hasJar?`<td>${nf(C.tb)}</td><td>${nf(C.szocho)}</td>`:""}<td>${nf(C.total)}</td><td></td></tr></tfoot>
+      </table></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Kifizetetlen számláid</h2>
+    <p class="lead">Ezekre még nem érkezett meg a pénz. Amikor befolynak, abban a hónapban lesznek bevételek.${old.length?" A korábbi évek tételeit érdemes behajtani, vagy szólj, ha már rendezve vannak.":""}</p>
+    ${!d.unpaid.length ? '<p class="sub">Nincs kifizetetlen számlád.</p>' : ""}
+    ${cur.length ? `<h3>Idei számlák · ${cur.length} db, ${ft(cur.reduce((a,u)=>a+u.osszeg,0))}</h3>${unpaidTable(cur)}` : ""}
+    ${old.length ? `<h3 class="gap">Korábbi évek számlái · ${old.length} db, ${ft(old.reduce((a,u)=>a+u.osszeg,0))}</h3>${unpaidTable(old)}` : ""}
+  </section>
+
+  <footer class="foot">
+    <p><strong>Hogyan számolunk?</strong> Átalányadózásnál a bevétel akkor számít, amikor megérkezik. A bevételből ${ktgPct}% költséghányadot vonunk le, a maradék a jövedelem. Az évi jövedelemből ${ft(P.mentes)} (a ${d.year}-es minimálbér éves összegének fele) adómentes. Felette 15% SZJA${hasJar?", 18,5% TB-járulék és 13% szociális hozzájárulási adó":""} a fizetendő.</p>
+    ${d.jogallas==="fo"?`<p><strong>Járulékminimum.</strong> Főfoglalkozású egyéni vállalkozóként havonta legalább a ${d.min_alap_txt} (${ft(C.min_base)}) után fizetsz TB-járulékot és szochót, akkor is, ha a jövedelmed ennél kevesebb vagy adómentes. Ez havi ${ft(Math.round(C.min_base*P.tb)+Math.round(C.min_base*P.szocho))}.</p>`:""}
+    ${d.jogallas==="mellek"||d.jogallas==="tars"?`<p><strong>Mellékfoglalkozás.</strong> Mivel mellette munkaviszonyban is biztosított vagy, nincs járulékminimum: csak a tényleges, adómentes rész feletti jövedelem után fizetsz járulékot.</p>`:""}
+    ${d.jogallas==="nyugdijas"?`<p><strong>Nyugdíjasként</strong> kiegészítő tevékenységet folytatsz, ezért TB-járulékot és szochót nem fizetsz, csak SZJA-t.</p>`:""}
+    ${(d.notes||[]).map(n=>`<p>${esc(n)}</p>`).join("")}
+    <p>Ez tájékoztató összesítés a ${hdLong(d.asOf)}-i adatok alapján, nem adóbevallás. Az iparűzési adó nincs benne. Kérdésed van? Írj nekünk: <span class="num">anaria@anaria.hu</span></p>
+  </footer>`;
+  document.getElementById("lock").hidden = true; app.hidden = false;
+  wireCopy(app);
+  app.querySelectorAll(".qx:not(.mx)").forEach(b => b.addEventListener("click", () => {
+    const open = b.getAttribute("aria-expanded") !== "true"; b.setAttribute("aria-expanded", open);
+    app.querySelectorAll(`tr.mr[data-q="${b.dataset.q}"]`).forEach(r => r.hidden = !open);
+    if (!open) { app.querySelectorAll(`tr.ml[data-q="${b.dataset.q}"]`).forEach(r => r.hidden = true); app.querySelectorAll(`tr.mr[data-q="${b.dataset.q}"] .mx`).forEach(x => x.setAttribute("aria-expanded","false")); }
+  }));
+  app.querySelectorAll(".mx").forEach(b => b.addEventListener("click", () => {
+    const open = b.getAttribute("aria-expanded") !== "true"; b.setAttribute("aria-expanded", open);
+    const r = app.querySelector(`tr.ml[data-m="${b.dataset.m}"]`); if (r) r.hidden = !open;
+  }));
+  drawChart(C, d);
+}
+
+function payBlock(d, C, hasJar){
+  const N = d.nav_szamla || {};
+  const acct = n => n ? `<span class="acct"><code>${n}</code><button class="cp" data-copy="${n}">Másol</button></span>` : "";
+  const jar = hasJar && (C.havi_tb + C.havi_szocho) > 0;
+  const rows = [];
+  if (jar && C.havi_tb > 0) rows.push(`<div class="prow"><span class="lbl">TB-járulék</span><span class="amt">${ft(C.havi_tb)}</span>${acct(N.tb)}</div>`);
+  if (jar && C.havi_szocho > 0) rows.push(`<div class="prow"><span class="lbl">Szociális hozzájárulási adó</span><span class="amt">${ft(C.havi_szocho)}</span>${acct(N.szocho)}</div>`);
+  const memo = d.adoazon ? `<div class="memo">Közlemény minden utalásnál: az adóazonosító jeled, <code>${esc(d.adoazon)}</code> <button class="cp" data-copy="${esc(d.adoazon)}">Másol</button></div>` : "";
+  return `<section class="pay" aria-label="Befizetések">
+    ${jar ? `<div class="pcard">
+      <div><span class="t">Havonta utalandó járulék</span><p>Ha ezt havonta átutalod, a negyedéves elszámolásnál nem ér meglepetés. Mindkét tételt a saját NAV-számlájára utald.</p></div>
+      ${rows.join("")}
+      ${rows.length > 1 ? `<div class="prow sum"><span class="lbl">Összesen havonta</span><span class="amt">${ft(C.havi_tb + C.havi_szocho)}</span><span></span></div>` : ""}
+      ${memo}
+    </div>` : ""}
+    <div class="pcard">
+      <div><span class="t">SZJA-előleg</span><p>${C.szja > 0 ? "Az idén eddig befolyt bevételed után. Negyedévente kell befizetni, a negyedévet követő hónap 12-ig." : "Eddig nincs fizetendő SZJA: a jövedelmedet még fedezi az évi adómentes rész."}</p></div>
+      <div class="prow sum"><span class="lbl">Eddigi befolyt bevételed után fizetendő összesen</span><span class="amt">${ft(C.szja)}</span>${C.szja > 0 ? acct(N.szja) : "<span></span>"}</div>
+      ${C.szja > 0 ? `<details class="qd"><summary>Negyedévenkénti bontás</summary>
+        <div class="qlist">${C.quarters.map(Q => `<div class="qrow"><span>${QN[Q.q]} negyedév${Q.in_progress ? " <small>(még tart, eddig)</small>" : ""}</span><span class="amt">${ft(Q.szja)}</span><span class="due">${Q.due < d.asOf ? "határidő volt: " : "határidő: "}${hd(Q.due)}</span></div>`).join("")}</div>
+      </details>` : ""}
+      ${!jar && C.szja > 0 ? memo : ""}
+    </div>
+  </section>`;
+}
+function wireCopy(root){
+  root.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", async () => {
+    const t = b.dataset.copy, old = b.textContent;
+    try { await navigator.clipboard.writeText(t); b.textContent = "Másolva"; }
+    catch (e) { const r = document.createRange(); r.selectNodeContents(b.previousElementSibling); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = "Kijelölve"; }
+    setTimeout(() => b.textContent = old, 1500);
+  }));
+}
+function unpaidTable(list){
+  const tot = list.reduce((a,u)=>a+u.osszeg,0);
+  return `<div class="tbl"><table>
+    <thead><tr><th>Számla</th><th class="hide-n">Kelte</th><th>Fiz. határidő</th><th style="text-align:left">Vevő</th><th>Összeg</th></tr></thead>
+    <tbody>${list.map(u=>`<tr><td>${esc(u.no)}</td><td class="hide-n">${hd(u.kelte)}</td><td>${hd(u.hatarido)}</td><td class="txt">${esc(u.vevo)}</td><td>${nf(u.osszeg)}</td></tr>`).join("")}</tbody>
+    <tfoot><tr><td class="lbl">Összesen</td><td class="hide-n"></td><td></td><td></td><td>${nf(tot)}</td></tr></tfoot>
+  </table></div>`;
+}
+
+function drawChart(C, d){
+  const el = document.getElementById("chart");
+  const ms = C.months.slice(0, C.as_m).map((v,i)=>({i, rev:v}));
+  const W = Math.max(340, Math.min(900, el.clientWidth || 760)), narrow = W < 560;
+  const H = narrow ? 220 : 250, L = narrow ? 40 : 56, R = 6, T = 14, B = 28;
+  const max = Math.max(...ms.map(m=>m.rev), 1);
+  const step = [50000,100000,200000,250000,500000,1000000,2000000,5000000].find(s=>max/s<=5) || 10000000;
+  const top = Math.ceil(max/step)*step;
+  const y = v => T + (H-T-B)*(1-v/top);
+  const bw = (W-L-R)/ms.length, w = Math.min(42, bw*0.62);
+  const fmt = v => v===0 ? "0" : v>=1e6 ? (v/1e6).toLocaleString("hu-HU")+" M" : (v/1e3).toLocaleString("hu-HU")+" e";
+  let g = "";
+  for(let v=0; v<=top+1; v+=step){
+    g += `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/>`;
+    g += `<text x="${L-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--f-num)">${fmt(v)}</text>`;
+  }
+  ms.forEach((m,k)=>{
+    const cx = L + bw*k + bw/2, h = Math.max(0, y(0)-y(m.rev)), r = Math.min(4, h/2);
+    const x0 = cx-w/2, y0 = y(m.rev);
+    const path = h>0 ? `M${x0},${y(0)} V${y0+r} Q${x0},${y0} ${x0+r},${y0} H${x0+w-r} Q${x0+w},${y0} ${x0+w},${y0+r} V${y(0)} Z` : "";
+    const cur = m.i === C.as_m-1;
+    g += `<g class="b" data-k="${k}" tabindex="0"><rect x="${L+bw*k}" y="${T}" width="${bw}" height="${H-T-B}" fill="transparent"/>${path?`<path d="${path}" fill="var(--accent)" opacity="${cur?0.5:1}"/>`:""}<text x="${cx}" y="${H-9}" text-anchor="middle" font-size="${narrow?10:11.5}" fill="var(--ink-2)">${HU_M[m.i]}</text></g>`;
+  });
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Havi befolyt bevétel oszlopdiagram">${g}</svg><div class="tip" hidden></div>`;
+  const tip = el.querySelector(".tip"), svg = el.querySelector("svg");
+  svg.querySelectorAll("g.b").forEach(b=>{
+    const k = +b.dataset.k, m = ms[k];
+    const show = ()=>{ const s = svg.getBoundingClientRect().width/W;
+      tip.innerHTML = `<b>${HU_MF[m.i]}</b> · ${ft(m.rev)}${m.i===C.as_m-1?" (eddig)":""}`;
+      tip.style.left = (L+bw*k+bw/2)*s+"px"; tip.style.top = y(m.rev)*s+"px"; tip.hidden = false; };
+    b.addEventListener("mouseenter", show); b.addEventListener("focus", show); b.addEventListener("click", show);
+    b.addEventListener("mouseleave", ()=>tip.hidden = true); b.addEventListener("blur", ()=>tip.hidden = true);
+  });
+}
+if (PAYLOAD.plain) { document.getElementById("lock").hidden = true; render(PAYLOAD.plain); }
+</script>
+</body></html>
