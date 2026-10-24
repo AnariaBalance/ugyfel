@@ -1,0 +1,314 @@
+<!doctype html><html lang="hu"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"></head><body><title>Anaria Balance · számlaforgalom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500&display=swap">
+<style>
+/* Layout: cégügyfél számlaforgalom – kulcsszámok, havi diagram, havi tábla, top vevők/szállítók */
+:root{
+  --bg:#f4f6f7; --surface:#ffffff; --ink:#15232b; --ink-2:#4a5a63; --muted:#76858d;
+  --line:#dde3e6; --accent:#1d5d6b; --accent-soft:#dbe9ec; --warn:#9c4f17; --warn-soft:#f6e7d9; --good:#2e6b3f; --good-soft:#e1efe4;
+  --f-display:"Newsreader", Georgia, "Times New Roman", serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-num:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f171b; --surface:#16222a; --ink:#e5ecef; --ink-2:#a9b8bf; --muted:#7f9098;
+  --line:#26363f; --accent:#6cb6c4; --accent-soft:#1c3940; --warn:#e3a06a; --warn-soft:#3a2a1d; --good:#7cc08e; --good-soft:#1c3324; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f171b; --surface:#16222a; --ink:#e5ecef; --ink-2:#a9b8bf; --muted:#7f9098;
+  --line:#26363f; --accent:#6cb6c4; --accent-soft:#1c3940; --warn:#e3a06a; --warn-soft:#3a2a1d; --good:#7cc08e; --good-soft:#1c3324; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:28px 48px}
+.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:32px}
+.firm{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:500;font-size:clamp(28px,5vw,40px);line-height:1.12;margin:4px 0 6px;text-wrap:balance}
+h2{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);font-weight:600;margin:0 0 6px}
+.lead{color:var(--ink-2);margin:0 0 14px;max-width:68ch;font-size:14.5px}
+.sub{color:var(--ink-2);margin:0}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.lock{max-width:380px;margin:12vh auto 0;display:flex;flex-direction:column;gap:16px}
+.lock form{display:flex;flex-direction:column;gap:10px}
+.lock label{font-size:13px;color:var(--ink-2)}
+.lock input{font:inherit;font-family:var(--f-num);padding:11px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+input:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:inherit;font-weight:600;padding:11px 14px;border:0;border-radius:6px;background:var(--accent);color:var(--surface);cursor:pointer}
+details.ux{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0}
+details.ux > summary{cursor:pointer;padding:12px 16px;font-weight:600;font-size:15px;list-style:none;display:flex;gap:8px;align-items:center}
+details.ux > summary::-webkit-details-marker{display:none}
+details.ux > summary::before{content:"▸";color:var(--accent);transition:transform .15s;display:inline-block}
+details.ux[open] > summary::before{transform:rotate(90deg)}
+details.ux > summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+details.ux > :not(summary){margin:0 12px 12px}
+.note-bank{margin:4px 0 12px;padding:10px 14px;border-radius:8px;background:var(--accent-soft);color:var(--ink);font-size:13.5px}
+.bankmiss{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:8px;border:1px solid var(--line);border-left:4px solid var(--warn);background:var(--warn-soft);font-size:14px}
+.bankmiss b{color:var(--warn)}
+.bankmiss.ok{border-left-color:var(--good);background:var(--good-soft)}
+.bankmiss.ok b{color:var(--good)}
+.err{color:var(--warn);font-size:14px;min-height:1.4em;margin:0}
+.note{font-size:13px;color:var(--muted)}
+/* next payment */
+.next{display:grid;grid-template-columns:1fr auto;gap:6px 24px;align-items:end;padding:20px 22px;background:var(--accent-soft);border-radius:10px}
+.next .lbl{font-size:13px;color:var(--ink-2);grid-column:1/-1}
+.next .date{font-family:var(--f-display);font-size:clamp(24px,4.4vw,32px);line-height:1.1}
+.next .amt{font-family:var(--f-num);font-size:clamp(22px,4vw,28px);font-weight:500;text-align:right;white-space:nowrap}
+.next .det{grid-column:1/-1;font-size:13.5px;color:var(--ink-2);margin:4px 0 0}
+@media (max-width:520px){.next{grid-template-columns:1fr}.next .amt{text-align:left}}
+/* monthly contribution */
+.pay{display:flex;flex-direction:column;gap:12px;margin-top:-14px}
+.pcard{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:16px 22px;display:flex;flex-direction:column;gap:10px}
+.pcard .t{font-weight:600;font-size:15px}
+.pcard p{margin:0;font-size:13.5px;color:var(--ink-2);max-width:70ch}
+.prow{display:grid;grid-template-columns:minmax(110px,1fr) 140px 250px;gap:4px 18px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.prow .lbl{font-size:14px}
+.prow .amt{font-family:var(--f-num);font-size:17px;font-weight:500;white-space:nowrap;text-align:right}
+.prow.sum .lbl{font-weight:600}
+.prow.sum .amt{font-size:20px}
+.acct{display:flex;align-items:center;gap:8px;justify-content:flex-end;min-width:0}
+.acct code{font-family:var(--f-num);font-size:13px;color:var(--ink-2);user-select:all;white-space:nowrap}
+.cp{font:inherit;font-size:12px;font-weight:600;padding:4px 9px;border-radius:5px;background:var(--accent-soft);color:var(--accent);border:0;cursor:pointer}
+.memo{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:13px;color:var(--ink-2)}
+.memo code{font-family:var(--f-num);color:var(--ink);user-select:all}
+.qd summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:14px}
+.qlist{display:flex;flex-direction:column;margin-top:8px}
+.qrow{display:grid;grid-template-columns:minmax(120px,1fr) 140px 250px;gap:4px 18px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
+.qrow small{color:var(--muted);font-size:12px}
+.qrow .amt{font-family:var(--f-num);text-align:right;white-space:nowrap}
+.qrow .due{font-size:12.5px;color:var(--ink-2);text-align:right}
+@media (max-width:620px){.qrow{grid-template-columns:1fr auto}.qrow .due{grid-column:1/-1;text-align:left}}
+@media (max-width:620px){.prow{grid-template-columns:1fr auto}.prow .acct{grid-column:1/-1;justify-content:flex-start}}
+/* tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.tile{background:var(--surface);padding:16px 18px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.tile .k{font-size:13px;color:var(--ink-2);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tile .v{font-family:var(--f-num);font-size:21px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tile .h{font-size:12.5px;color:var(--muted)}
+.pill{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:99px;background:var(--warn-soft);color:var(--warn)}
+.pill.ok{background:var(--good-soft);color:var(--good)}
+/* meters */
+.meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+.meter{display:flex;flex-direction:column;gap:8px;min-width:0}
+.meter .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.meter .t{font-weight:600;font-size:14.5px}
+.meter .top .num{font-size:12.5px;color:var(--ink-2)}
+.bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:5px}
+.bar i.over{background:var(--warn)}
+.meter p{margin:0;font-size:13.5px;color:var(--ink-2)}
+/* chart */
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;padding:6px 9px;border-radius:5px;white-space:nowrap;transform:translate(-50%,-115%)}
+/* tables */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:12px;font-weight:600;color:var(--ink-2);letter-spacing:.02em;background:var(--bg)}
+td{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+td.lbl{font-family:var(--f-body)}
+td.txt{font-family:var(--f-body);white-space:normal;min-width:150px;text-align:left}
+td small{display:block;font-family:var(--f-body);font-size:11.5px;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+tfoot td{font-weight:600;background:var(--bg);border-top:1px solid var(--line);border-bottom:0}
+.two{display:grid;gap:22px}
+.qx{font:inherit;font-weight:500;background:none;border:0;padding:0;color:var(--accent);cursor:pointer;display:inline-flex;gap:6px;align-items:baseline;text-align:left}
+.qx::before{content:"▸";font-size:11px;transition:transform .15s;display:inline-block}
+.qx[aria-expanded="true"]::before{transform:rotate(90deg)}
+tr.mr td{background:var(--bg);font-size:13.5px;color:var(--ink-2)}
+tr.mr td.lbl{padding-left:30px}
+tr.ml > td{background:var(--bg);padding:4px 12px 12px 48px}
+.il{width:100%;border-collapse:collapse;font-size:12.5px}
+.il th,.il td{padding:4px 8px;text-align:right;border-bottom:1px solid var(--line);font-weight:400;color:var(--ink-2)}
+.il th{font-size:11.5px;color:var(--muted)}
+.il th:nth-child(-n+2),.il td:nth-child(-n+2){text-align:left}
+.il td.v{white-space:normal}
+.il tfoot td{text-align:left;color:var(--warn);border-bottom:0}
+@media (max-width:640px){tr.ml > td{padding-left:12px}.il th:nth-child(3),.il td:nth-child(3){display:none}}
+.mark{color:var(--warn)}
+@media (max-width:560px){.hide-n{display:none}}
+h3{font-size:14px;font-weight:600;margin:0 0 8px;color:var(--ink)}
+h3.gap{margin-top:22px}
+.foot{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:18px}
+.foot p{margin:0;max-width:72ch}
+.foot strong{color:var(--ink-2)}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .6s ease}}
+
+.note-box{padding:14px 18px;border-radius:8px;background:var(--accent-soft);font-size:14px;color:var(--ink);display:flex;flex-direction:column;gap:6px}
+.note-box p{margin:0;max-width:75ch}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--ink-2);margin:0 0 10px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.c-out{background:var(--accent)} .c-in{background:var(--muted)}
+td .sh{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+td .sh b{display:block;height:6px;border-radius:3px;background:var(--accent);opacity:.55}
+td.neg{color:var(--warn)}
+tr.cur td{color:var(--ink-2)}
+@media (max-width:560px){td .sh b{display:none}}
+</style>
+
+<div id="lock" class="lock">
+  <div>
+    <div class="firm">Anaria Balance Kft.</div>
+    <h1>2026. évi számlaforgalom</h1>
+    <p class="sub"><b>Kimenő és bejövő számlák havonta</b></p>
+    <p class="sub">Ez az oldal jelszóval védett. A jelszót tőlünk kapod meg.</p>
+  </div>
+  <form id="f" autocomplete="off">
+    <label for="pw">Jelszó</label>
+    <input id="pw" type="password" inputmode="numeric" autocomplete="current-password" required>
+    <button type="submit" id="go">Megnyitás</button>
+    <p class="err" id="err" role="alert"></p>
+  </form>
+  <p class="note">Az adatok titkosítva vannak, és csak a te böngésződben nyílnak meg a jelszóval.</p>
+</div>
+
+<main id="app" class="wrap" hidden></main>
+
+<script>
+const PAYLOAD = {"salt": "G6kyHcJwFjPybNNtRXz2WQ==", "iv": "SwutcqMUFYjRPR4p", "iter": 600000, "ct": "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"};
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function decrypt(pw){
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey({name:"PBKDF2", salt:b64(PAYLOAD.salt), iterations:PAYLOAD.iter, hash:"SHA-256"}, base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+  const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv:b64(PAYLOAD.iv)}, key, b64(PAYLOAD.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+document.getElementById("f").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = document.getElementById("go"), err = document.getElementById("err");
+  btn.disabled = true; btn.textContent = "Megnyitás…"; err.textContent = "";
+  let data;
+  try { data = await decrypt(document.getElementById("pw").value.trim()); }
+  catch(x){ err.textContent = "Hibás jelszó. Ellenőrizd, majd próbáld újra."; btn.disabled = false; btn.textContent = "Megnyitás"; return; }
+  render(data);
+});
+const nf = n => Math.round(n).toLocaleString("hu-HU").replace(/ /g," ");
+const ft = n => nf(n) + " Ft";
+const mft = n => (n/1e6).toLocaleString("hu-HU",{minimumFractionDigits:1,maximumFractionDigits:1}) + " M Ft";
+const HU_M = ["jan.","febr.","márc.","ápr.","máj.","jún.","júl.","aug.","szept.","okt.","nov.","dec."];
+const HU_MF = ["január","február","március","április","május","június","július","augusztus","szeptember","október","november","december"];
+const hdLong = s => { const [y,m,d] = s.split("-"); return `${y}. ${HU_MF[+m-1]} ${+d}.`; };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pct = (a,b) => b ? (a/b*100).toLocaleString("hu-HU",{maximumFractionDigits:1}) + "%" : "–";
+
+function partnerTable(title, list, rest, restN, total, who){
+  const max = Math.max(...list.map(x=>x.osszeg), 1);
+  return `<div class="tbl"><table>
+    <thead><tr><th>${title}</th><th class="hide-n">Számla</th><th>Bruttó összeg</th><th>Arány</th></tr></thead>
+    <tbody>${list.map(x=>`<tr><td class="txt">${esc(x.nev)}</td><td class="hide-n">${x.db} db</td><td>${nf(x.osszeg)}</td><td><span class="sh"><b style="width:${Math.max(4,Math.round(x.osszeg/max*70))}px"></b>${pct(x.osszeg,total)}</span></td></tr>`).join("")}
+    <tr><td class="txt">Többi ${restN} ${who}</td><td class="hide-n"></td><td>${nf(rest)}</td><td>${pct(rest,total)}</td></tr></tbody>
+    <tfoot><tr><td class="lbl">Összesen</td><td class="hide-n"></td><td>${nf(total)}</td><td>100%</td></tr></tfoot>
+  </table></div>`;
+}
+
+function render(d){
+  const M = d.out_m.length, cur = d.cur_m - 1;
+  const sum = a => a.reduce((x,y)=>x+y,0);
+  const totOut = sum(d.out_m), totIn = sum(d.in_m), diff = totOut - totIn;
+  const nOut = sum(d.out_c), nIn = sum(d.in_c);
+  const closed = d.out_m.slice(0, cur), avgOut = sum(closed)/closed.length;
+  const best = closed.indexOf(Math.max(...closed));
+  const top1 = d.top_v[0];
+
+  const rows = d.out_m.map((o,i)=>({i, o, n:d.in_m[i], oc:d.out_c[i], ic:d.in_c[i], k:o-d.in_m[i]}));
+  const Q = [0,1,2,3].map(q=>rows.filter(r=>Math.floor(r.i/3)===q)).filter(a=>a.length);
+
+  document.getElementById("app").innerHTML = `
+  <header>
+    <div class="firm">Anaria Balance Kft. · ${d.year}. évi számlaforgalom</div>
+    <h1>${esc(d.name)}</h1>
+    <p class="sub">Állapot: ${hdLong(d.asOf)} · a NAV Online Számla adatai alapján · bruttó összegek</p>
+  </header>
+
+  <section class="note-box" role="note">
+    <p><b>Mit látsz itt?</b> Az összes idén kiállított és befogadott számládat havonta összesítve, a teljesítés dátuma szerint. Ez a számlaforgalom, nem a könyvelt eredmény: a bérek, járulékok, adók, a számla nélküli költségek és az értékcsökkenés nincsenek benne, és az összegek ÁFÁ-val együtt szerepelnek.</p>
+    <p>Az ${HU_MF[cur]} még tart, és a szállítói számlák egy része csak napokkal később érkezik meg, ezért ez a hónap még változni fog.</p>
+  </section>
+
+  <section class="tiles" aria-label="Összesítés">
+    <div class="tile"><span class="k">Kiszámlázott ${d.year}-ban</span><span class="v">${ft(totOut)}</span><span class="h">${nOut} kimenő számla, bruttó</span></div>
+    <div class="tile"><span class="k">Bejövő számlák ${d.year}-ban</span><span class="v">${ft(totIn)}</span><span class="h">${nIn} szállítói számla, bruttó</span></div>
+    <div class="tile"><span class="k">Különbözet</span><span class="v">${ft(diff)}</span><span class="h">a kiszámlázott ${pct(diff,totOut)}-a; nem azonos a nyereséggel</span></div>
+    <div class="tile"><span class="k">Havi átlag kiszámlázás</span><span class="v">${ft(avgOut)}</span><span class="h">január–${HU_MF[cur-1]}; legerősebb: ${HU_MF[best]}</span></div>
+  </section>
+
+  <section>
+    <h2>Kiszámlázott és bejövő számlák havonta</h2>
+    <p class="lead">A teljesítés hónapja szerint. Vidd az egeret (vagy koppints) egy hónapra a pontos összegekért.</p>
+    <div class="legend"><span><i class="c-out"></i>Kiszámlázott (kimenő)</span><span><i class="c-in"></i>Bejövő számlák</span></div>
+    <div class="chart" id="chart"></div>
+  </section>
+
+  <section>
+    <h2>Havi bontás</h2>
+    <p class="lead">A jóváíró (mínuszos) számlák levonva szerepelnek abban a hónapban, amelyre a teljesítésük esik.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Hónap</th><th class="hide-n">Kimenő db</th><th>Kiszámlázott</th><th class="hide-n">Bejövő db</th><th>Bejövő</th><th>Különbözet</th></tr></thead>
+      <tbody>${Q.map((qs,q)=>qs.map(r=>`<tr class="${r.i===cur?"cur":""}"><td class="lbl">${HU_MF[r.i]}${r.i===cur?"<small>még tart</small>":""}</td><td class="hide-n">${r.oc}</td><td>${nf(r.o)}</td><td class="hide-n">${r.ic}</td><td>${nf(r.n)}</td><td class="${r.k<0?"neg":""}">${nf(r.k)}</td></tr>`).join("")
+        + (qs.length===3 ? `<tr class="mr"><td class="lbl">${["I.","II.","III.","IV."][q]} negyedév</td><td class="hide-n">${sum(qs.map(r=>r.oc))}</td><td>${nf(sum(qs.map(r=>r.o)))}</td><td class="hide-n">${sum(qs.map(r=>r.ic))}</td><td>${nf(sum(qs.map(r=>r.n)))}</td><td>${nf(sum(qs.map(r=>r.k)))}</td></tr>` : "")).join("")}</tbody>
+      <tfoot><tr><td class="lbl">Összesen</td><td class="hide-n">${nOut}</td><td>${nf(totOut)}</td><td class="hide-n">${nIn}</td><td>${nf(totIn)}</td><td>${nf(diff)}</td></tr></tfoot>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Legnagyobb vevőid</h2>
+    <p class="lead">Kiknek számláztál a legtöbbet idén. A legnagyobb vevőd, a ${esc(top1.nev)} egymaga a kiszámlázott összeg ${pct(top1.osszeg,totOut)}-át adja.</p>
+    ${partnerTable("Vevő", d.top_v, d.rest_v, d.rest_v_n, totOut, "vevő")}
+  </section>
+
+  <section>
+    <h2>Legnagyobb szállítóid</h2>
+    <p class="lead">Kiktől vásároltál a legtöbbet idén. Az összegekből a visszáru és a jóváírások már le vannak vonva.</p>
+    ${partnerTable("Szállító", d.top_s, d.rest_s, d.rest_s_n, totIn, "szállító")}
+  </section>
+
+  <footer class="foot">
+    <p><strong>Honnan vannak az adatok?</strong> A NAV Online Számla rendszerébe beküldött számláidból, amelyeket az ÜgyfélSegéd gyűjt össze. A havi besorolás a teljesítés dátuma szerint történik, ahogy az ÁFA-bevallásban is.</p>
+    <p><strong>Miért nem ez a nyereség?</strong> A bruttó összegekben benne van az ÁFA, amit befizetsz vagy visszaigényelsz. A tényleges eredményhez a bérköltség, a járulékok, az adók és az értékcsökkenés is kell, ezt a könyvelés zárása után tudjuk megmondani.</p>
+    <p>Kérdésed van valamelyik számmal kapcsolatban? Írj nekünk bátran.</p>
+  </footer>`;
+
+  document.getElementById("lock").hidden = true;
+  document.getElementById("app").hidden = false;
+  drawChart(d);
+  let t; window.addEventListener("resize", ()=>{ clearTimeout(t); t = setTimeout(()=>drawChart(d), 150); });
+}
+
+function drawChart(d){
+  const el = document.getElementById("chart");
+  const cur = d.cur_m - 1;
+  const ms = d.out_m.map((o,i)=>({i, o, n:d.in_m[i]}));
+  const W = Math.max(320, Math.min(900, el.clientWidth || 760)), narrow = W < 560;
+  const H = narrow ? 230 : 270, L = narrow ? 40 : 56, R = 6, T = 14, B = 28;
+  const max = Math.max(...ms.map(m=>Math.max(m.o,m.n)), 1);
+  const step = [1e6,2e6,2.5e6,5e6,1e7].find(s=>max/s<=6) || 2e7;
+  const top = Math.ceil(max/step)*step;
+  const y = v => T + (H-T-B)*(1-v/top);
+  const bw = (W-L-R)/ms.length, w = Math.min(18, bw*0.32), gap = 2;
+  const fmt = v => v===0 ? "0" : (v/1e6).toLocaleString("hu-HU")+" M";
+  const bar = (x0, v, fill, op) => { const h = Math.max(0, y(0)-y(v)); if(!h) return ""; const r = Math.min(3, h/2), y0 = y(v);
+    return `<path d="M${x0},${y(0)} V${y0+r} Q${x0},${y0} ${x0+r},${y0} H${x0+w-r} Q${x0+w},${y0} ${x0+w},${y0+r} V${y(0)} Z" fill="${fill}" opacity="${op}"/>`; };
+  let g = "";
+  for(let v=0; v<=top+1; v+=step){
+    g += `<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/>`;
+    g += `<text x="${L-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--f-num)">${fmt(v)}</text>`;
+  }
+  ms.forEach((m,k)=>{
+    const cx = L + bw*k + bw/2, op = m.i===cur ? 0.5 : 1;
+    g += `<g class="b" data-k="${k}" tabindex="0"><rect x="${L+bw*k}" y="${T}" width="${bw}" height="${H-T-B}" fill="transparent"/>${bar(cx-w-gap/2, m.o, "var(--accent)", op)}${bar(cx+gap/2, m.n, "var(--muted)", op)}<text x="${cx}" y="${H-9}" text-anchor="middle" font-size="${narrow?10:11.5}" fill="var(--ink-2)">${HU_M[m.i]}</text></g>`;
+  });
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Havi kiszámlázott és bejövő számlák oszlopdiagram">${g}</svg><div class="tip" hidden></div>`;
+  const tip = el.querySelector(".tip"), svg = el.querySelector("svg");
+  svg.querySelectorAll("g.b").forEach(b=>{
+    const k = +b.dataset.k, m = ms[k];
+    const show = ()=>{ const s = svg.getBoundingClientRect().width/W;
+      tip.innerHTML = `<b>${HU_MF[m.i]}</b>${m.i===cur?" (eddig)":""}<br>Kiszámlázott: ${ft(m.o)}<br>Bejövő: ${ft(m.n)}`;
+      tip.style.left = Math.min(Math.max((L+bw*k+bw/2)*s, 90), svg.getBoundingClientRect().width-90)+"px"; tip.style.top = y(Math.max(m.o,m.n))*s+"px"; tip.hidden = false; };
+    b.addEventListener("mouseenter", show); b.addEventListener("focus", show); b.addEventListener("click", show);
+    b.addEventListener("mouseleave", ()=>tip.hidden = true); b.addEventListener("blur", ()=>tip.hidden = true);
+  });
+}
+if (PAYLOAD.plain) { document.getElementById("lock").hidden = true; render(PAYLOAD.plain); }
+
+</script>
+</body></html>
