@@ -155,7 +155,7 @@ td.miss{color:var(--muted);font-family:var(--f-body);font-size:13px}
   </div>
   <form id="f" autocomplete="off">
     <label for="pw">Jelszó</label>
-    <input id="pw" type="password" inputmode="numeric" autocomplete="current-password" required>
+    <input id="pw" type="password" autocomplete="current-password" autocapitalize="off" spellcheck="false" required>
     <button type="submit" id="go">Megnyitás</button>
     <p class="err" id="err" role="alert"></p>
   </form>
@@ -163,7 +163,7 @@ td.miss{color:var(--muted);font-family:var(--f-body);font-size:13px}
 </div>
 <main id="app" class="wrap" hidden></main>
 <script>
-const PAYLOAD = {"salt": "hx+nIir+rq7X3XtZt2r1uA==", "iv": "r1H2XW+U3N8/meoz", "iter": 600000, "ct": "xQNeMVk6v9EvZTD6qi9CeaOh3kQvapkV0HEDWXvF/DIauzGQeSLXMd//NHLkxIwPD1uO/3K2k4DmFTOSlmJdNa0wddear1Ek+vrfUJQafQFhDUXZmbrNJZQGXKxHJ/ZimnzeGjJR8RRMFHXGPK2oMRpo3hw+V6LlfbXGrWTKpo8mJt38tPYqBmLoWTyLI3XbkGl0fWH6yUPYoCL0fcsyod8ndOLJjsrBnDxtFawWBQfiOQJhpYrUxNmtwl57cp/HQtFz9Vgq95eNqQAFDlfO1cLsbSW6HTG4uPWulO+COnJVQFWX1N3kF4II"};
+const PAYLOAD = {"salt": "KIo5YxDXlblY/rMLJQB08g==", "iv": "MbVTLHNKgisV1JRQ", "iter": 600000, "ct": "PFyYZlADrQMC+FbQYTF9k5mw2PuuI9A18MGYsvq2BJMRZ5K6DwDFiCp3vVJBWTC+a7VmzlVVhIdsS/zW3x9tZ6dkMuTXHbfq+9STho/wqWFvrSQWNRIAm1dRBtFRx9fCXccdXwI4cC0I0FvfkhVKATL8/HQZynEBjVyOPFvz1D7hb7R3ZSxKcoRwE4IM5BzwEkmiy6VGlF+iGnM/cmNDAeW94rZ788NQTJUPr3X1TIxDrPIj3BHxVh/RbjP2T4EpNaWBJ6lRiV1nV35eF+dlC5vi4C8m8Vvt31QV5JNuRMTf59tUwNmPLQD4"};
 const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 async function decrypt(pw){
   const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
@@ -182,6 +182,7 @@ document.getElementById("f").addEventListener("submit", async e => {
   const app = document.getElementById("app"); app.hidden = false;
   render(data, app);
 });
+if (PAYLOAD.plain) queueMicrotask(() => { document.getElementById("lock").hidden = true; const app = document.getElementById("app"); app.hidden = false; render(PAYLOAD.plain, app); });
 const nf = n => Math.round(n).toLocaleString("hu-HU").replace(/\u00a0| /g,"\u202f");
 const ft = n => nf(n) + " Ft";
 const pc = x => (Math.round(x*10)/10).toLocaleString("hu-HU") + "%";

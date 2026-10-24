@@ -155,7 +155,7 @@ td.miss{color:var(--muted);font-family:var(--f-body);font-size:13px}
   </div>
   <form id="f" autocomplete="off">
     <label for="pw">Jelszó</label>
-    <input id="pw" type="password" inputmode="numeric" autocomplete="current-password" required>
+    <input id="pw" type="password" autocomplete="current-password" autocapitalize="off" spellcheck="false" required>
     <button type="submit" id="go">Megnyitás</button>
     <p class="err" id="err" role="alert"></p>
   </form>
@@ -163,7 +163,7 @@ td.miss{color:var(--muted);font-family:var(--f-body);font-size:13px}
 </div>
 <main id="app" class="wrap" hidden></main>
 <script>
-const PAYLOAD = {"salt": "JoWD9qyC9jywJm7ubxJfwA==", "iv": "q5C2JPN3eC5MHM/T", "iter": 600000, "ct": "MKNRwSnMFddlgqE8BvcHN4dfuvqzrPDKUtzc5OMsTN1LtKweZrSkzNS0SuezojTF4MJqFRnNt6NxzhN8YvhpOP+zosKYhsK0isiOLxy1LN2rAU8Srt29CqOAna1jb3JuxaS1z1HB7aNEI6vobz3GBlhkkzgskauJQNLgqqO8PV0kMN+oTthfJxW1VHKyX3knGhvGW1sKfqxfemczbCsVaQRT5IEkdoQQ4qUmLoFZ3gIqLzQ5vKvFXLHwWIxRMYFPSDIjRRNE3AwzCBq+2WGYFelU69VwZwuPunDOHVA6ezPj+qaRIu+eMk27e4GPCwl/AUvV4us2NT1dh99eAfSJOjcuxBRHH2GDfgiJ4WqLx4pfCQ6bjNv9L60jNk+0ecN/u4YtIbLfW6qdFCvJnIQTJWYWg05TP/MJ9FIkLLqm07pTkOiF0kiasIymRdSxxnz5fORBpAEcbN518St92RlciEEKd3EZAYvDj+mVkwMC2/QBQw/MvthDJFDRJcuuvpwc1KHyBenODY8J10Gocr3VaCNXiNLm+hHNu381ARsusnKkOun8LNW0jLWhYylOy4Yn+JVhgx+FdfnZ9o7IpZCnk5ziBT5Zm125o5O4xpDs+mmOj9SFqGLx/YBJTJu34Lj5xEg9zLtQt0nK4TEpN4Y3B0d9MbkpNqYUJUUVYUtYnf/ilrqocPoAD+DjJ3q6X4RvZxnWdZV4u3jjOliR0nYc8Fu2R5VqY5EIZCkG6rAom2+poaoQTznRAk5+G8n2e2cuJRrvUYmUu1QPVyTF0ZZfsZsDFhAqa+DQ+vHYTfuSfQ3uPwYesXH6gY9SNkMNlrxRu2SwOHNRVA2K5MVYHprYKVOA8BPD1WGroXjM5UcgjedL5R5gPq1JOTvbsTsuW/2o/Fmfsy7BZ7hnsb6Te+46fQllufYNAMC5UAvozPJ65iiMr3x/9mbWWkBW1sXle42xnY08+vuhv0Gqr+zz2bJ67vo+Fnk/sV/80c+R7aRwnS0E5z0JmwgVK+0Sa2YfRkgAuxLkxSDBrvBCT9ri7oikqhna8Scyn6ESDIE7leXajtxliVPhtokH5NT8vxy9+R365x6Q6BGy+sCBs1NlsweLedmeSTrFzwiT+qpgWDujG47Hh8n9mTmNU2NHoSEZeR60T9+tNg+EnjP6AvdkZYb+6yCU92yKfN3KkOcK/MoN4BLkBL3ckAW11IeH4/ybcbK9Jg+Z59GyYjoseSWmQALpvibyWSvcNe+/LxzLNE+lw6HMlDo1iI1zKMYnclKA9CWz/ObgOOhO7Nl8ISQeG8YRpw4wfdgW6BQH6Yali51DXamOhNIuG1tR5Km6eVIOBx9zqcIJluvVISbzon8Zat0DPaFNkRAdjeBohmRtZ4yVn8K8tku+TweFr8MP4cKjYwzOh/+/zzRn11E5DULRDgxQ/VGVO6ho09PlZlxo"};
+const PAYLOAD = {"salt": "UXUrHhKoCZIxGoGvrdwKhQ==", "iv": "s5hfjpGqHRIQliYZ", "iter": 600000, "ct": "jbnyd6KCdh02A9o8NTAff7UryfWPPiNycRQ4VeaD3CQ6sxoHeKV+x4cvp+Ea6KQKZL4gSVMMFOmrjdYJ1LnBPST8iFYqC5m9pSaz/Ks5o4V4QyAE3YcTRNsbm9CZepU2wpPgrg5pPHvK3T+ojFdmv8IKIcF1YkpP2gVz6c7bgJhf9VmQXZ844c26TeX68uu52VvefWsaKE6pCJ2MAaopqOJBN3TwjO12WHece7ybqH0pyD4amQGBsoyTJjk+EuxG5IqOx0Yoo39Vn2m49hRpEc7oZrzOIsOopm8F2gGM1wHXbNjLjM90JqFuPjPZj6pNXs02lAgJpwufKRtjc7GmfUZNvqsiSW38v4IvQ1eaFXiIe1AoTjfLmKkMJ7VbBNb62NQzT+Ae6xZwHn5b3Vqdl9JPVbd0R2pM40MMXlZ+VPkHe5zotmHq4YSeyHfyGFe2dxrQkYjm4OnBqEFdFz83Brrp7C7byuPDla1kuuYU1vkHNeuxlPJvIi2lJFW6u8dGiEqshPzKCv7/J8ZA0DN6rxvfh1paUnP4QIQMXS90qo7FdFjCUo4kSBSDFa9AckIcTyhXL2bI3p4n5/aLbP6sSKUppTKxKMX2qwP/Bz99M6vl/dKcS/WfMDXM0hl3ECfwrN6mmP2xWHrVZfpevp/gz3PRtXP+AK3d7ZQ+ghhO/GnLHaWACU37tpmBPtwnSD2idfR3rK7qSYEK2Dj4zr9Tk6PO7Vb0gwo/dfdCcCGmGQu36gTsFKu21/vSemCzd0oSKU8nL0xlY4c/VMiquZMRm53HPuIpnBrVadI23tU4VeXSq6uZsC7AX+hqVsZSQyp3RX21scNPPv5F6r6Do2D1UcMFSkwxkID9cG+fm8AndDWsA38WS1dHBE3nDX2maUshXfYioztzVu29ID7V+ItUuQxefZvWEzA2dddEKj8iH1kT/s+HV6A1cm/hPEHBoSvmoCIpfKynN6qEqQ/5UZN6kLxAkiPpXgDyLcI/VZMg+uIP0AgWq5kOA9wiEc0rPqIO0KRsl7XACu8n8ujM1+I342f3ebcKeok9RRNr3uDgIJlBxdTvKXnFGflLDebMQO6o+HEVsMphMkupg+7p/X/GDA4FoGoIfNYcD1pt0rsZfWfdqRg65os5yWmybIchs9hMDYFYIIG7boctQBP0ybtN4K1Y8TN0afm7vpvAQdK+Lm1X4jCY4GDad7NP/SRyLVA1PpGiWlddjYPiNsWmSbPmL6OlR5hBqnzAv8LaAbteuMIwhVTRPLDjgAKJ0eG0UAkuxRy9uwlfmBstQV5INvp/Czt46hhRQezZyR9RoSBoY5RELyOexJtMKNaNkWJBfoJAij94Ttiehhf9zt9TNPZk2QuijH8+pjYCvlbJDeJMFEzd4UQQ1nOXbx6E0OTmTiuVt6IyBYdNuWCEb8n6PXZIqOHr09BoyCnkR5jx"};
 const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 async function decrypt(pw){
   const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
@@ -182,6 +182,7 @@ document.getElementById("f").addEventListener("submit", async e => {
   const app = document.getElementById("app"); app.hidden = false;
   render(data, app);
 });
+if (PAYLOAD.plain) queueMicrotask(() => { document.getElementById("lock").hidden = true; const app = document.getElementById("app"); app.hidden = false; render(PAYLOAD.plain, app); });
 const nf = n => Math.round(n).toLocaleString("hu-HU").replace(/\u00a0| /g,"\u202f");
 const ft = n => nf(n) + " Ft";
 const pc = x => (Math.round(x*10)/10).toLocaleString("hu-HU") + "%";

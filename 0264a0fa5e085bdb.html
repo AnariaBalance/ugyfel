@@ -155,7 +155,7 @@ td.miss{color:var(--muted);font-family:var(--f-body);font-size:13px}
   </div>
   <form id="f" autocomplete="off">
     <label for="pw">Jelszó</label>
-    <input id="pw" type="password" inputmode="numeric" autocomplete="current-password" required>
+    <input id="pw" type="password" autocomplete="current-password" autocapitalize="off" spellcheck="false" required>
     <button type="submit" id="go">Megnyitás</button>
     <p class="err" id="err" role="alert"></p>
   </form>
@@ -163,7 +163,7 @@ td.miss{color:var(--muted);font-family:var(--f-body);font-size:13px}
 </div>
 <main id="app" class="wrap" hidden></main>
 <script>
-const PAYLOAD = {"salt": "OO/zCVbdmMPGmmsXxJWL7w==", "iv": "RXt98zixMcxpOK6W", "iter": 600000, "ct": "JW8XI9+xuUsAjGs7IGC3NqGrXeOSB5MKZfTQ0VBXgd0OcODQKmE79EH3Q56CtA+SCDKSfEojIxILPpKOcfBE9XQp9dGc+1yDlixlAm0aUzveg/bGUxDi51VQ+Ant9iE6bwM/kKEOhvB3UNtValesFoAdZBy2OizhUHN2H6hsaHX2//rCzeiDhyx3QIN0zToMnFr0vT7XxCUKhFhVm+7sE+anY8ZE0pMgJQmUHWh+e7xY0ZK6yH58kca7xR/nsmxRD/vy+e3qFHy6q9fA3EMywpl44xxP5ow3y5C4iXFV/dS9kQCvL6J9x1/MtzjNPkyZI5yI66wevY3rl0pdC7Ns4BkXfvXc5F0JWC3TQ8L31uxUFC4aF2GwyBRVFUXz+cBcBhcua5PmK602ppOV+Lr5OgwaYkv2DDB05PDJ0/ojGUClV0MeOt4z55eFOsg54vZ1W+DM5T5KYQyfKosRNbEXi8TzG9Bp48bD4NjMol3Ja7McQDf4bPpXlXcJwBLtHXk0pVnwgKPFKxGSzCie186IlioTCW4wi0gp6UTEF28CVvjbDL2lhUtwFXNBV5rbFDNItN1EwfSsCXfnUWj07EEhitFcYidbPpjA9TXyphJ1J2efrO0hWE+GQXEXwYpEpRhXUETthqlYoolELwVb8I6GqQff5gUYrKpcUWiOSo1C0CKvuUfaSa6hYtWC4cPQW+lCtiTwMh0bLI9iHFwT8nMSYLn1OwRTQWdqlRQmBpg8UK27EWa0MKg5oEiOp37ybA1d5YtsW0bPbM+YoX/eERIKStUQ75vyAsi/bqh9+hWWvCLlXliVm4zhXhlEIuEwpFN0zhkdO7TwFufikvnVzSwCm78JykhyDmudREp4F9MlpAnDo2IC4pinZ+ubu1nU8tT2NM8HWWWB5iW/NefeQoEhUzrwKGdz6ifdsi7bq+ZVVihgEVZPl8UXgKcDt54jnUtKuxkVBtuWZzYU31/VueqEdQrgtF/51LRMR5CMQO9/Z5kInIja5X3Jw1OSp3WKFvo/X9ekeEWhJB9d+m8imBywDsNyT53OnWINla5tPdustPh2V0J69nrVT6G8DK8uIOeQ1puaajmZMDPl3y19OumHLfh5TR3vE9xsQj75qGnQr6bazbTH2dpPRFuAnAcDg897SsrAtrRU62Zht1fAfrDmwxFotd8FF/DVKdhsep7pptpuRDuwz/5VwmNiOFEaVE4gLh7lSn8clhPOW+YL6cRc6dx73BsvXsOcXAnsawvwygCHmAA2hb8YpervvoNp6TpAKFUbscbNh7kuM6NNMljjWdUn0rtM2dcoMyDQ7TzqcMP2mDI0zTEgmHgNpDGBnB8iXL9oEP4YA+y0NgDo2tVwTlBFoHh4n+xR+EezCdQUJEvD7G0VX2k85TY="};
+const PAYLOAD = {"salt": "D0E6nxjvu/SATuye3QPLJg==", "iv": "koG2q/hoEd75i19H", "iter": 600000, "ct": "f5PueDcOL2FOLnreHOX1r6hi9a/Sm8c7f77LoNl9jVFsg51WDhPngXAfSpB4u+83hy1k+bJQQRLF7QeEz1P6c4mkBkr5Ao8cMvGErhQ197RorruD107NyZFkkONR8CqxmmHizKC/FxjFo4oZQx2GgnIHUQz7STrW0wDSw5vk/PHivXHxLjPFVEpYnucN4hgGq01AMkswui7I0nPBuTexpHLgmdhy8AEAzNLYdoSJ9iFc9VFJbKtVqWuT9+Er50eNb5fqlv7qDScziqjo1QKafEVRPuGgEy2fUI5PqfFhTfGRRXq2vw8uMYb1J8zVuF3AeT/JnylihhoGziWqDvRp9tu/N5avA6CicienpzRxRxgDK4BsjZqmANbZJ/gL4hUxevR5D+ui5W5rbDVf9beRA9KEpGOQZ1q9agHgi8b6VTAzvVgX37BBtD2thqqNPh3LNRTyOfp9ZFjJIgnhdHqx2jo+3xjVIUCVe0OmlN2zTYUTxQLROlJi5hqkgUcQOiz+W1SFRJn4ufsLRvK8LluLgwofwcglwN8T0nbpLCQLN19NXGU3FiKRn0r40+/+aT2v4hlw97Mt7S4at/o+KUK241ZMMezQvcM4DQ0cjMpjE7Xu6NunBHaDpjSRLrw8+3jMo0cV1IhA4Rkt1FVftwLjvrU6hfpMcy4xVKkc4tGQSpubogJrD7YEnNIneo/zWuqbK58wDmcL/HaFS7M1l7CEnWayrcsdXnXfdZgf2awsMCVcFeLNn484X0SH4oP6PjrJlfgle/Xke1Avu8b3zRObCtLqd/P656zeTXEMrjR6sq5G2IlMYdwSL5z2bd5IpGLTpk0uJrcw+cnLReq6NdyZiYlsMuDT+g2TLhAJa9iWu6ykzMPmJsZTAOpqNaiTpbFyBKyDXKBvFIQSP4RP1GrWl0f0j1W+LBmGbYxFK382inRmJaCYSVqpmC+luNvp4vx/dgxGp5Qd0j/LkykCwE6qXZXvjSRJLrOehjeFy0f2vd+xRHbR9R1bA2NCGkROqi/IbWN9Stw/DcSxXDOaRw5g9Tc8IJqo5aszR1E54frzCfTGY3WPxPjyXZSbe27Tml6Zsvg32rgc7dvP74Na7yOzHOXU3CSbajdlucmo+961oBzXWwOwNe6aXTbuM99LeV61fxZZxWmx3r4cYU/OU9GeuGQXgcMQbZYi4x1QbTJbnBI324aNkBcICS19QalTZH1VqxQsF/QB7z+3yCM5yMFBg+2tzuUqf/ZN3Zwi76xS9rBE0liIu20DxIkWRfWD36SPkFCVeHt+HMqD9EyCG4NPSNiStmTfbkcm57ZV0swjqI6nxmQan465z6IzYXVtRnPUwj2S2DawZD9JcMTgh5IFt2+EdfF7PJMnMcsw8nDa2NsQ4MkmAsQPB1U="};
 const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 async function decrypt(pw){
   const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
@@ -182,6 +182,7 @@ document.getElementById("f").addEventListener("submit", async e => {
   const app = document.getElementById("app"); app.hidden = false;
   render(data, app);
 });
+if (PAYLOAD.plain) queueMicrotask(() => { document.getElementById("lock").hidden = true; const app = document.getElementById("app"); app.hidden = false; render(PAYLOAD.plain, app); });
 const nf = n => Math.round(n).toLocaleString("hu-HU").replace(/\u00a0| /g,"\u202f");
 const ft = n => nf(n) + " Ft";
 const pc = x => (Math.round(x*10)/10).toLocaleString("hu-HU") + "%";
