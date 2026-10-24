@@ -1,0 +1,204 @@
+<!doctype html><html lang="hu"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"></head><body><title>Anaria Balance · KATA áttekintés</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500&display=swap">
+<style>
+/* Layout: egyoszlopos ügyfélkivonat – következő befizetés, kulcsszámok, keretek, havi diagram, negyedéves bontás, nyitott számlák */
+:root{
+  --bg:#f4f6f7; --surface:#ffffff; --ink:#15232b; --ink-2:#4a5a63; --muted:#76858d;
+  --line:#dde3e6; --accent:#1d5d6b; --accent-soft:#dbe9ec; --warn:#9c4f17; --warn-soft:#f6e7d9; --good:#2e6b3f; --good-soft:#e1efe4;
+  --f-display:"Newsreader", Georgia, "Times New Roman", serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-num:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f171b; --surface:#16222a; --ink:#e5ecef; --ink-2:#a9b8bf; --muted:#7f9098;
+  --line:#26363f; --accent:#6cb6c4; --accent-soft:#1c3940; --warn:#e3a06a; --warn-soft:#3a2a1d; --good:#7cc08e; --good-soft:#1c3324; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f171b; --surface:#16222a; --ink:#e5ecef; --ink-2:#a9b8bf; --muted:#7f9098;
+  --line:#26363f; --accent:#6cb6c4; --accent-soft:#1c3940; --warn:#e3a06a; --warn-soft:#3a2a1d; --good:#7cc08e; --good-soft:#1c3324; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:28px 48px}
+.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:32px}
+.firm{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:500;font-size:clamp(28px,5vw,40px);line-height:1.12;margin:4px 0 6px;text-wrap:balance}
+h2{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);font-weight:600;margin:0 0 6px}
+.lead{color:var(--ink-2);margin:0 0 14px;max-width:68ch;font-size:14.5px}
+.sub{color:var(--ink-2);margin:0}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.lock{max-width:380px;margin:12vh auto 0;display:flex;flex-direction:column;gap:16px}
+.lock form{display:flex;flex-direction:column;gap:10px}
+.lock label{font-size:13px;color:var(--ink-2)}
+.lock input{font:inherit;font-family:var(--f-num);padding:11px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+input:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:inherit;font-weight:600;padding:11px 14px;border:0;border-radius:6px;background:var(--accent);color:var(--surface);cursor:pointer}
+details.ux{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0}
+details.ux > summary{cursor:pointer;padding:12px 16px;font-weight:600;font-size:15px;list-style:none;display:flex;gap:8px;align-items:center}
+details.ux > summary::-webkit-details-marker{display:none}
+details.ux > summary::before{content:"▸";color:var(--accent);transition:transform .15s;display:inline-block}
+details.ux[open] > summary::before{transform:rotate(90deg)}
+details.ux > summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+details.ux > :not(summary){margin:0 12px 12px}
+.note-bank{margin:4px 0 12px;padding:10px 14px;border-radius:8px;background:var(--accent-soft);color:var(--ink);font-size:13.5px}
+.bankmiss{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:8px;border:1px solid var(--line);border-left:4px solid var(--warn);background:var(--warn-soft);font-size:14px}
+.bankmiss b{color:var(--warn)}
+.bankmiss.ok{border-left-color:var(--good);background:var(--good-soft)}
+.bankmiss.ok b{color:var(--good)}
+.err{color:var(--warn);font-size:14px;min-height:1.4em;margin:0}
+.note{font-size:13px;color:var(--muted)}
+/* next payment */
+.next{display:grid;grid-template-columns:1fr auto;gap:6px 24px;align-items:end;padding:20px 22px;background:var(--accent-soft);border-radius:10px}
+.next .lbl{font-size:13px;color:var(--ink-2);grid-column:1/-1}
+.next .date{font-family:var(--f-display);font-size:clamp(24px,4.4vw,32px);line-height:1.1}
+.next .amt{font-family:var(--f-num);font-size:clamp(22px,4vw,28px);font-weight:500;text-align:right;white-space:nowrap}
+.next .det{grid-column:1/-1;font-size:13.5px;color:var(--ink-2);margin:4px 0 0}
+@media (max-width:520px){.next{grid-template-columns:1fr}.next .amt{text-align:left}}
+/* monthly contribution */
+.pay{display:flex;flex-direction:column;gap:12px;margin-top:-14px}
+.pcard{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:16px 22px;display:flex;flex-direction:column;gap:10px}
+.pcard .t{font-weight:600;font-size:15px}
+.pcard p{margin:0;font-size:13.5px;color:var(--ink-2);max-width:70ch}
+.prow{display:grid;grid-template-columns:minmax(110px,1fr) 140px 250px;gap:4px 18px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.prow .lbl{font-size:14px}
+.prow .amt{font-family:var(--f-num);font-size:17px;font-weight:500;white-space:nowrap;text-align:right}
+.prow.sum .lbl{font-weight:600}
+.prow.sum .amt{font-size:20px}
+.acct{display:flex;align-items:center;gap:8px;justify-content:flex-end;min-width:0}
+.acct code{font-family:var(--f-num);font-size:13px;color:var(--ink-2);user-select:all;white-space:nowrap}
+.cp{font:inherit;font-size:12px;font-weight:600;padding:4px 9px;border-radius:5px;background:var(--accent-soft);color:var(--accent);border:0;cursor:pointer}
+.memo{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:13px;color:var(--ink-2)}
+.memo code{font-family:var(--f-num);color:var(--ink);user-select:all}
+.qd summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:14px}
+.qlist{display:flex;flex-direction:column;margin-top:8px}
+.qrow{display:grid;grid-template-columns:minmax(120px,1fr) 140px 250px;gap:4px 18px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
+.qrow small{color:var(--muted);font-size:12px}
+.qrow .amt{font-family:var(--f-num);text-align:right;white-space:nowrap}
+.qrow .due{font-size:12.5px;color:var(--ink-2);text-align:right}
+@media (max-width:620px){.qrow{grid-template-columns:1fr auto}.qrow .due{grid-column:1/-1;text-align:left}}
+@media (max-width:620px){.prow{grid-template-columns:1fr auto}.prow .acct{grid-column:1/-1;justify-content:flex-start}}
+/* tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.tile{background:var(--surface);padding:16px 18px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.tile .k{font-size:13px;color:var(--ink-2);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tile .v{font-family:var(--f-num);font-size:21px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tile .h{font-size:12.5px;color:var(--muted)}
+.pill{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:99px;background:var(--warn-soft);color:var(--warn)}
+.pill.ok{background:var(--good-soft);color:var(--good)}
+/* meters */
+.meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+.meter{display:flex;flex-direction:column;gap:8px;min-width:0}
+.meter .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.meter .t{font-weight:600;font-size:14.5px}
+.meter .top .num{font-size:12.5px;color:var(--ink-2)}
+.bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:5px}
+.bar i.over{background:var(--warn)}
+.meter p{margin:0;font-size:13.5px;color:var(--ink-2)}
+/* chart */
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;padding:6px 9px;border-radius:5px;white-space:nowrap;transform:translate(-50%,-115%)}
+/* tables */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:12px;font-weight:600;color:var(--ink-2);letter-spacing:.02em;background:var(--bg)}
+td{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+td.lbl{font-family:var(--f-body)}
+td.txt{font-family:var(--f-body);white-space:normal;min-width:150px;text-align:left}
+td small{display:block;font-family:var(--f-body);font-size:11.5px;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+tfoot td{font-weight:600;background:var(--bg);border-top:1px solid var(--line);border-bottom:0}
+.two{display:grid;gap:22px}
+.qx{font:inherit;font-weight:500;background:none;border:0;padding:0;color:var(--accent);cursor:pointer;display:inline-flex;gap:6px;align-items:baseline;text-align:left}
+.qx::before{content:"▸";font-size:11px;transition:transform .15s;display:inline-block}
+.qx[aria-expanded="true"]::before{transform:rotate(90deg)}
+tr.mr td{background:var(--bg);font-size:13.5px;color:var(--ink-2)}
+tr.mr td.lbl{padding-left:30px}
+tr.ml > td{background:var(--bg);padding:4px 12px 12px 48px}
+.il{width:100%;border-collapse:collapse;font-size:12.5px}
+.il th,.il td{padding:4px 8px;text-align:right;border-bottom:1px solid var(--line);font-weight:400;color:var(--ink-2)}
+.il th{font-size:11.5px;color:var(--muted)}
+.il th:nth-child(-n+2),.il td:nth-child(-n+2){text-align:left}
+.il td.v{white-space:normal}
+.il tfoot td{text-align:left;color:var(--warn);border-bottom:0}
+@media (max-width:640px){tr.ml > td{padding-left:12px}.il th:nth-child(3),.il td:nth-child(3){display:none}}
+.mark{color:var(--warn)}
+@media (max-width:560px){.hide-n{display:none}}
+h3{font-size:14px;font-weight:600;margin:0 0 8px;color:var(--ink)}
+h3.gap{margin-top:22px}
+.foot{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:18px}
+.foot p{margin:0;max-width:72ch}
+.foot strong{color:var(--ink-2)}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .6s ease}}
+
+.cbar{fill:var(--accent)}
+.cbar.miss{fill:none;stroke:var(--line);stroke-dasharray:3 3}
+.cline{fill:none;stroke:var(--warn);stroke-width:2}
+.kline{stroke:var(--warn);stroke-width:1.5;stroke-dasharray:5 4}
+.ax{font-family:var(--f-body);font-size:11px;fill:var(--muted)}
+.leg{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12.5px;color:var(--ink-2);margin-top:8px}
+.leg i{display:inline-block;width:12px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+td.miss{color:var(--muted);font-family:var(--f-body);font-size:13px}
+.warnbox{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:8px;border-left:4px solid var(--warn);background:var(--warn-soft)}
+.warnbox b{color:var(--warn)}
+.infobox{padding:12px 16px;border-radius:8px;background:var(--accent-soft);font-size:14px}
+</style>
+<div id="lock" class="lock">
+  <div>
+    <div class="firm">Anaria Balance Kft.</div>
+    <h1>KATA-ügyfelek</h1>
+    <p class="sub"><b>Belső áttekintés</b></p>
+    <p class="sub">Ez az oldal jelszóval védett. A jelszót e-mailben küldtük el neked.</p>
+  </div>
+  <form id="f" autocomplete="off">
+    <label for="pw">Jelszó</label>
+    <input id="pw" type="password" inputmode="numeric" autocomplete="current-password" required>
+    <button type="submit" id="go">Megnyitás</button>
+    <p class="err" id="err" role="alert"></p>
+  </form>
+  <p class="note">Az adatok titkosítva vannak, és csak a te böngésződben nyílnak meg a jelszóval.</p>
+</div>
+<main id="app" class="wrap" hidden></main>
+<script>
+const PAYLOAD = {"salt": "87rAWaO199vfdEqcXpjkgA==", "iv": "Zs51xCA0AdG7dhhQ", "iter": 600000, "ct": "YhN32uTtNLMlxYqCTdUkjybqidQe4tCjVTMpgcjl3wxbySBMdL5dtFO7Qw0YKQzuFPtsd/G9P+DLg5eHHF1aqqiwq+Rok4PyDNTGToxPCngaCgx4z0aZTulRQCwM36TLGIOzsBVy3bUkA8qaXeIK4ikqv6nTZBRXoWZMihei3RMfPHcEaa5Z+R62OlrlNjov2N1LIlbm7PQNqpVijGvIgh5V+wNVhnUdFWBN5IP+qXh0riN0qTMJBT/SaaMzWcoszrkCKud407eh007sj8pcPZYGi9HKoBQWm06OTB+0DK1dOV6r7xqKFrhtNj1jI2QaKTf7AVhYSLRAkYOadDVHGchIOLo9n33dnC6nqvvD4KcOA67pX8TmPodB2Eveah9ge+kx3Ayi9zr1StZkW6JY4tJoB+Nw9aLRwRH9+Copy4J8mWOMLPne1JNi0pgTIxWZhk2Q40FHK0tvcO6dlItLcDfVhwFzbNrH3VWqOoBrOlFLoM+1w2RMZwHWUw6Tbx0fBv1kIEZ87PCy/3Ne2ktIyrzGhEcM5jEdlnhQsSbswO1o0eRttYsup6WT6s6KSUTPegXl/wkagfyQFmKZA4kcCZqJI+NXACDfZxXJVuasoWpF2435/uhp+ZRpDlcySaTt8rBxzYVkRHDbhGXRLAnT0DcT5DaQMo2idXgeW7VmHCFY9g1lIyQAzjGVEacpbwHIQetrYtCx3PaUD0RUdGLWC/q3HE5/hzf1tuqAKMtZcJZ7x9Y8h9USxEGPW5eo88xmoervPKZr9GgLV5UJIE9zgwvG6Bxze+jwPVbb6C4/oGsBzoAUKLkLgxY/gYOY8o1/H3pFfJQB03pcuQpJ9onQ46mQh1gar7TJsPMGqRadPuUPJyQoO2tHnfQvEBpQCrDKSBweP++HDm4EPDvRXR3X9UEZ9u7SNiPg31QQMJ4X1a5umdbwWqheZF90Uinh1hu/qi/Fxeeo4uNaVI3+5JKInMwf7gPHN/yCp2nX/Gk595Yvm6wR5bZ2fMSKSS6UcK07iUUjPzdqqx4oItIz1HWDHNjrIEsGG/N45+zQG368uf4LFG3G5wJeGSixhp/v2CuYXWChBMkbNH62Qkk3BqSMQtBqzs418OcVRsfykVwSTHd6p9DmTeEc2uIw8PUEmd1pyt6tRVNoOyZgq/REeVo5DK4Dyhsw8Hqx7AdNZIEjyTfmT9NhUsn3ZuCLY2sFVOvv2S4H0Mne+VChlE+TVzWGvmcMUOhbKcQ2cmhGCQ9VT6hI6MZrZ0ENuF6Kl1GGg0RRbL3RUwDI6B7dXTxyiEaG5cdBqUlPIqTIkhJYGYSs8m2tJ9YVJfFtLd0EPx+2BE3rdzBKR+88uB1JE0i1Aa1sRY+ka4qEXxhbc4RoPgMiNtjhLN4zpFrg6xlsdWOWYZ3Tx/gqGdwiks1voIRR86z74GzWTAMzK8Wl8pVhskwlkw5zbyaPJW2toWkk1QXF4R9CjMq4vyjNlEdIy/2eTZ0YWv5ObPDXc2MpxiMMyDiJV0pr3gvTDh0loYaI1tjQXKNaxbhFl/vPbuOYQpzzvxastW1+lAbDh24VJB5eBkfTGn2lhZ9eRvvny7Hb9SnQlE6sD3EEAj9Kgdfu9AokRdS0pzMyd4Ii9+nbslCCP+jkBkthDSnU7YSQ+jkQljZ8DhoekoKfmjgPDSutR41I4BN8R5JojA+yozBgo0FnVzYCXsoJlKFoJASgEvtSCvg4MIshApZWyv73xb+AMXxUbvwJ9AUMHfLMEwG1Aww0/g6WBHuIyAZFss6vnjHLGALSmFOMOrEQONDSdbTwF4vM5Xzgl/iLzbvrguidqmxqm24QlwTjT3OWjw=="};
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function decrypt(pw){
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey({name:"PBKDF2", salt:b64(PAYLOAD.salt), iterations:PAYLOAD.iter, hash:"SHA-256"}, base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+  const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv:b64(PAYLOAD.iv)}, key, b64(PAYLOAD.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+document.getElementById("f").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = document.getElementById("go"), err = document.getElementById("err");
+  btn.disabled = true; btn.textContent = "Megnyitás…"; err.textContent = "";
+  let data;
+  try { data = await decrypt(document.getElementById("pw").value.trim()); }
+  catch(x){ err.textContent = "Hibás jelszó. Ellenőrizd, majd próbáld újra."; btn.disabled = false; btn.textContent = "Megnyitás"; return; }
+  document.getElementById("lock").hidden = true;
+  const app = document.getElementById("app"); app.hidden = false;
+  render(data, app);
+});
+const nf = n => Math.round(n).toLocaleString("hu-HU").replace(/\u00a0| /g,"\u202f");
+const ft = n => nf(n) + " Ft";
+const pc = x => (Math.round(x*10)/10).toLocaleString("hu-HU") + "%";
+const HU_M = ["jan.","febr.","márc.","ápr.","máj.","jún.","júl.","aug.","szept.","okt.","nov.","dec."];
+const HU_MF = ["január","február","március","április","május","június","július","augusztus","szeptember","október","november","december"];
+const hdLong = s => { const [y,m,d] = s.split("-"); return `${y}. ${HU_MF[+m-1]} ${+d}.`; };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function render(d, app){
+  const asM = +d.asOf.slice(5,7);
+  const rows = d.clients.map(c=>{
+    const keret = d.keret_ev*c.kata_honapok/12, used = c.months.reduce((a,v)=>a+(v||0),0), p = used/keret*100;
+    const miss = c.months.slice(0,asM).map((v,i)=>v==null?HU_M[i]:null).filter(Boolean);
+    const pill = p>=100?'<span class="pill">túllépve</span>':p>=80?'<span class="pill">80% felett</span>':'<span class="pill ok">rendben</span>';
+    return `<tr><td class="lbl">${esc(c.name)}<small>${esc(c.tax)}</small></td>${c.months.slice(0,asM).map(v=>v==null?'<td class="miss">–</td>':`<td>${nf(v)}</td>`).join("")}<td><b>${nf(used)}</b></td><td>${pc(p)} ${pill}</td><td class="txt">${miss.length?"hiányzik: "+miss.join(", "):"teljes"}</td></tr>`; }).join("");
+  app.innerHTML = `<header><div class="firm">Anaria Balance Kft. · belső áttekintés</div><h1>KATA-ügyfelek ${d.year}</h1><p class="sub">Állapot: ${hdLong(d.asOf)} · összegek forintban</p></header>
+  <section><div class="tbl"><table><thead><tr><th>Ügyfél</th>${HU_M.slice(0,asM).map(m=>`<th>${m}</th>`).join("")}<th>Összesen</th><th>Keret</th><th>Adat</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
+}
+
+</script></body></html>

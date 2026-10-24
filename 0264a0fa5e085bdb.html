@@ -1,0 +1,296 @@
+<!doctype html><html lang="hu"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"></head><body><title>Anaria Balance · KATA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500&display=swap">
+<style>
+/* Layout: egyoszlopos ügyfélkivonat – következő befizetés, kulcsszámok, keretek, havi diagram, negyedéves bontás, nyitott számlák */
+:root{
+  --bg:#f4f6f7; --surface:#ffffff; --ink:#15232b; --ink-2:#4a5a63; --muted:#76858d;
+  --line:#dde3e6; --accent:#1d5d6b; --accent-soft:#dbe9ec; --warn:#9c4f17; --warn-soft:#f6e7d9; --good:#2e6b3f; --good-soft:#e1efe4;
+  --f-display:"Newsreader", Georgia, "Times New Roman", serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-num:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f171b; --surface:#16222a; --ink:#e5ecef; --ink-2:#a9b8bf; --muted:#7f9098;
+  --line:#26363f; --accent:#6cb6c4; --accent-soft:#1c3940; --warn:#e3a06a; --warn-soft:#3a2a1d; --good:#7cc08e; --good-soft:#1c3324; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f171b; --surface:#16222a; --ink:#e5ecef; --ink-2:#a9b8bf; --muted:#7f9098;
+  --line:#26363f; --accent:#6cb6c4; --accent-soft:#1c3940; --warn:#e3a06a; --warn-soft:#3a2a1d; --good:#7cc08e; --good-soft:#1c3324; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:28px 48px}
+.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:32px}
+.firm{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:500;font-size:clamp(28px,5vw,40px);line-height:1.12;margin:4px 0 6px;text-wrap:balance}
+h2{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);font-weight:600;margin:0 0 6px}
+.lead{color:var(--ink-2);margin:0 0 14px;max-width:68ch;font-size:14.5px}
+.sub{color:var(--ink-2);margin:0}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.lock{max-width:380px;margin:12vh auto 0;display:flex;flex-direction:column;gap:16px}
+.lock form{display:flex;flex-direction:column;gap:10px}
+.lock label{font-size:13px;color:var(--ink-2)}
+.lock input{font:inherit;font-family:var(--f-num);padding:11px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+input:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:inherit;font-weight:600;padding:11px 14px;border:0;border-radius:6px;background:var(--accent);color:var(--surface);cursor:pointer}
+details.ux{border:1px solid var(--line);border-radius:8px;background:var(--surface);margin:10px 0}
+details.ux > summary{cursor:pointer;padding:12px 16px;font-weight:600;font-size:15px;list-style:none;display:flex;gap:8px;align-items:center}
+details.ux > summary::-webkit-details-marker{display:none}
+details.ux > summary::before{content:"▸";color:var(--accent);transition:transform .15s;display:inline-block}
+details.ux[open] > summary::before{transform:rotate(90deg)}
+details.ux > summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+details.ux > :not(summary){margin:0 12px 12px}
+.note-bank{margin:4px 0 12px;padding:10px 14px;border-radius:8px;background:var(--accent-soft);color:var(--ink);font-size:13.5px}
+.bankmiss{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:8px;border:1px solid var(--line);border-left:4px solid var(--warn);background:var(--warn-soft);font-size:14px}
+.bankmiss b{color:var(--warn)}
+.bankmiss.ok{border-left-color:var(--good);background:var(--good-soft)}
+.bankmiss.ok b{color:var(--good)}
+.err{color:var(--warn);font-size:14px;min-height:1.4em;margin:0}
+.note{font-size:13px;color:var(--muted)}
+/* next payment */
+.next{display:grid;grid-template-columns:1fr auto;gap:6px 24px;align-items:end;padding:20px 22px;background:var(--accent-soft);border-radius:10px}
+.next .lbl{font-size:13px;color:var(--ink-2);grid-column:1/-1}
+.next .date{font-family:var(--f-display);font-size:clamp(24px,4.4vw,32px);line-height:1.1}
+.next .amt{font-family:var(--f-num);font-size:clamp(22px,4vw,28px);font-weight:500;text-align:right;white-space:nowrap}
+.next .det{grid-column:1/-1;font-size:13.5px;color:var(--ink-2);margin:4px 0 0}
+@media (max-width:520px){.next{grid-template-columns:1fr}.next .amt{text-align:left}}
+/* monthly contribution */
+.pay{display:flex;flex-direction:column;gap:12px;margin-top:-14px}
+.pcard{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:16px 22px;display:flex;flex-direction:column;gap:10px}
+.pcard .t{font-weight:600;font-size:15px}
+.pcard p{margin:0;font-size:13.5px;color:var(--ink-2);max-width:70ch}
+.prow{display:grid;grid-template-columns:minmax(110px,1fr) 140px 250px;gap:4px 18px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.prow .lbl{font-size:14px}
+.prow .amt{font-family:var(--f-num);font-size:17px;font-weight:500;white-space:nowrap;text-align:right}
+.prow.sum .lbl{font-weight:600}
+.prow.sum .amt{font-size:20px}
+.acct{display:flex;align-items:center;gap:8px;justify-content:flex-end;min-width:0}
+.acct code{font-family:var(--f-num);font-size:13px;color:var(--ink-2);user-select:all;white-space:nowrap}
+.cp{font:inherit;font-size:12px;font-weight:600;padding:4px 9px;border-radius:5px;background:var(--accent-soft);color:var(--accent);border:0;cursor:pointer}
+.memo{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:13px;color:var(--ink-2)}
+.memo code{font-family:var(--f-num);color:var(--ink);user-select:all}
+.qd summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:14px}
+.qlist{display:flex;flex-direction:column;margin-top:8px}
+.qrow{display:grid;grid-template-columns:minmax(120px,1fr) 140px 250px;gap:4px 18px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
+.qrow small{color:var(--muted);font-size:12px}
+.qrow .amt{font-family:var(--f-num);text-align:right;white-space:nowrap}
+.qrow .due{font-size:12.5px;color:var(--ink-2);text-align:right}
+@media (max-width:620px){.qrow{grid-template-columns:1fr auto}.qrow .due{grid-column:1/-1;text-align:left}}
+@media (max-width:620px){.prow{grid-template-columns:1fr auto}.prow .acct{grid-column:1/-1;justify-content:flex-start}}
+/* tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.tile{background:var(--surface);padding:16px 18px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.tile .k{font-size:13px;color:var(--ink-2);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tile .v{font-family:var(--f-num);font-size:21px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tile .h{font-size:12.5px;color:var(--muted)}
+.pill{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:99px;background:var(--warn-soft);color:var(--warn)}
+.pill.ok{background:var(--good-soft);color:var(--good)}
+/* meters */
+.meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+.meter{display:flex;flex-direction:column;gap:8px;min-width:0}
+.meter .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.meter .t{font-weight:600;font-size:14.5px}
+.meter .top .num{font-size:12.5px;color:var(--ink-2)}
+.bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:5px}
+.bar i.over{background:var(--warn)}
+.meter p{margin:0;font-size:13.5px;color:var(--ink-2)}
+/* chart */
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;padding:6px 9px;border-radius:5px;white-space:nowrap;transform:translate(-50%,-115%)}
+/* tables */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:12px;font-weight:600;color:var(--ink-2);letter-spacing:.02em;background:var(--bg)}
+td{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+td.lbl{font-family:var(--f-body)}
+td.txt{font-family:var(--f-body);white-space:normal;min-width:150px;text-align:left}
+td small{display:block;font-family:var(--f-body);font-size:11.5px;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+tfoot td{font-weight:600;background:var(--bg);border-top:1px solid var(--line);border-bottom:0}
+.two{display:grid;gap:22px}
+.qx{font:inherit;font-weight:500;background:none;border:0;padding:0;color:var(--accent);cursor:pointer;display:inline-flex;gap:6px;align-items:baseline;text-align:left}
+.qx::before{content:"▸";font-size:11px;transition:transform .15s;display:inline-block}
+.qx[aria-expanded="true"]::before{transform:rotate(90deg)}
+tr.mr td{background:var(--bg);font-size:13.5px;color:var(--ink-2)}
+tr.mr td.lbl{padding-left:30px}
+tr.ml > td{background:var(--bg);padding:4px 12px 12px 48px}
+.il{width:100%;border-collapse:collapse;font-size:12.5px}
+.il th,.il td{padding:4px 8px;text-align:right;border-bottom:1px solid var(--line);font-weight:400;color:var(--ink-2)}
+.il th{font-size:11.5px;color:var(--muted)}
+.il th:nth-child(-n+2),.il td:nth-child(-n+2){text-align:left}
+.il td.v{white-space:normal}
+.il tfoot td{text-align:left;color:var(--warn);border-bottom:0}
+@media (max-width:640px){tr.ml > td{padding-left:12px}.il th:nth-child(3),.il td:nth-child(3){display:none}}
+.mark{color:var(--warn)}
+@media (max-width:560px){.hide-n{display:none}}
+h3{font-size:14px;font-weight:600;margin:0 0 8px;color:var(--ink)}
+h3.gap{margin-top:22px}
+.foot{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:18px}
+.foot p{margin:0;max-width:72ch}
+.foot strong{color:var(--ink-2)}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .6s ease}}
+
+.cbar{fill:var(--accent)}
+.cbar.miss{fill:none;stroke:var(--line);stroke-dasharray:3 3}
+.cline{fill:none;stroke:var(--warn);stroke-width:2}
+.kline{stroke:var(--warn);stroke-width:1.5;stroke-dasharray:5 4}
+.ax{font-family:var(--f-body);font-size:11px;fill:var(--muted)}
+.leg{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12.5px;color:var(--ink-2);margin-top:8px}
+.leg i{display:inline-block;width:12px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+td.miss{color:var(--muted);font-family:var(--f-body);font-size:13px}
+.warnbox{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:8px;border-left:4px solid var(--warn);background:var(--warn-soft)}
+.warnbox b{color:var(--warn)}
+.infobox{padding:12px 16px;border-radius:8px;background:var(--accent-soft);font-size:14px}
+</style>
+<div id="lock" class="lock">
+  <div>
+    <div class="firm">Anaria Balance Kft.</div>
+    <h1>2026. évi KATA-összesítés</h1>
+    <p class="sub"><b>Bevétel és éves keret</b></p>
+    <p class="sub">Ez az oldal jelszóval védett. A jelszót e-mailben küldtük el neked.</p>
+  </div>
+  <form id="f" autocomplete="off">
+    <label for="pw">Jelszó</label>
+    <input id="pw" type="password" inputmode="numeric" autocomplete="current-password" required>
+    <button type="submit" id="go">Megnyitás</button>
+    <p class="err" id="err" role="alert"></p>
+  </form>
+  <p class="note">Az adatok titkosítva vannak, és csak a te böngésződben nyílnak meg a jelszóval.</p>
+</div>
+<main id="app" class="wrap" hidden></main>
+<script>
+const PAYLOAD = {"salt": "OO/zCVbdmMPGmmsXxJWL7w==", "iv": "RXt98zixMcxpOK6W", "iter": 600000, "ct": "JW8XI9+xuUsAjGs7IGC3NqGrXeOSB5MKZfTQ0VBXgd0OcODQKmE79EH3Q56CtA+SCDKSfEojIxILPpKOcfBE9XQp9dGc+1yDlixlAm0aUzveg/bGUxDi51VQ+Ant9iE6bwM/kKEOhvB3UNtValesFoAdZBy2OizhUHN2H6hsaHX2//rCzeiDhyx3QIN0zToMnFr0vT7XxCUKhFhVm+7sE+anY8ZE0pMgJQmUHWh+e7xY0ZK6yH58kca7xR/nsmxRD/vy+e3qFHy6q9fA3EMywpl44xxP5ow3y5C4iXFV/dS9kQCvL6J9x1/MtzjNPkyZI5yI66wevY3rl0pdC7Ns4BkXfvXc5F0JWC3TQ8L31uxUFC4aF2GwyBRVFUXz+cBcBhcua5PmK602ppOV+Lr5OgwaYkv2DDB05PDJ0/ojGUClV0MeOt4z55eFOsg54vZ1W+DM5T5KYQyfKosRNbEXi8TzG9Bp48bD4NjMol3Ja7McQDf4bPpXlXcJwBLtHXk0pVnwgKPFKxGSzCie186IlioTCW4wi0gp6UTEF28CVvjbDL2lhUtwFXNBV5rbFDNItN1EwfSsCXfnUWj07EEhitFcYidbPpjA9TXyphJ1J2efrO0hWE+GQXEXwYpEpRhXUETthqlYoolELwVb8I6GqQff5gUYrKpcUWiOSo1C0CKvuUfaSa6hYtWC4cPQW+lCtiTwMh0bLI9iHFwT8nMSYLn1OwRTQWdqlRQmBpg8UK27EWa0MKg5oEiOp37ybA1d5YtsW0bPbM+YoX/eERIKStUQ75vyAsi/bqh9+hWWvCLlXliVm4zhXhlEIuEwpFN0zhkdO7TwFufikvnVzSwCm78JykhyDmudREp4F9MlpAnDo2IC4pinZ+ubu1nU8tT2NM8HWWWB5iW/NefeQoEhUzrwKGdz6ifdsi7bq+ZVVihgEVZPl8UXgKcDt54jnUtKuxkVBtuWZzYU31/VueqEdQrgtF/51LRMR5CMQO9/Z5kInIja5X3Jw1OSp3WKFvo/X9ekeEWhJB9d+m8imBywDsNyT53OnWINla5tPdustPh2V0J69nrVT6G8DK8uIOeQ1puaajmZMDPl3y19OumHLfh5TR3vE9xsQj75qGnQr6bazbTH2dpPRFuAnAcDg897SsrAtrRU62Zht1fAfrDmwxFotd8FF/DVKdhsep7pptpuRDuwz/5VwmNiOFEaVE4gLh7lSn8clhPOW+YL6cRc6dx73BsvXsOcXAnsawvwygCHmAA2hb8YpervvoNp6TpAKFUbscbNh7kuM6NNMljjWdUn0rtM2dcoMyDQ7TzqcMP2mDI0zTEgmHgNpDGBnB8iXL9oEP4YA+y0NgDo2tVwTlBFoHh4n+xR+EezCdQUJEvD7G0VX2k85TY="};
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function decrypt(pw){
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey({name:"PBKDF2", salt:b64(PAYLOAD.salt), iterations:PAYLOAD.iter, hash:"SHA-256"}, base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+  const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv:b64(PAYLOAD.iv)}, key, b64(PAYLOAD.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+document.getElementById("f").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = document.getElementById("go"), err = document.getElementById("err");
+  btn.disabled = true; btn.textContent = "Megnyitás…"; err.textContent = "";
+  let data;
+  try { data = await decrypt(document.getElementById("pw").value.trim()); }
+  catch(x){ err.textContent = "Hibás jelszó. Ellenőrizd, majd próbáld újra."; btn.disabled = false; btn.textContent = "Megnyitás"; return; }
+  document.getElementById("lock").hidden = true;
+  const app = document.getElementById("app"); app.hidden = false;
+  render(data, app);
+});
+const nf = n => Math.round(n).toLocaleString("hu-HU").replace(/\u00a0| /g,"\u202f");
+const ft = n => nf(n) + " Ft";
+const pc = x => (Math.round(x*10)/10).toLocaleString("hu-HU") + "%";
+const HU_M = ["jan.","febr.","márc.","ápr.","máj.","jún.","júl.","aug.","szept.","okt.","nov.","dec."];
+const HU_MF = ["január","február","március","április","május","június","július","augusztus","szeptember","október","november","december"];
+const hdLong = s => { const [y,m,d] = s.split("-"); return `${y}. ${HU_MF[+m-1]} ${+d}.`; };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function calc(d){
+  const asM = +d.asOf.slice(5,7);            // a folyó hónap (1-12)
+  const keret = d.keret_ev * d.kata_honapok / 12;
+  const known = d.months.map(v => v != null);
+  const missing = d.months.slice(0, asM).map((v,i)=>v==null?i:-1).filter(i=>i>=0);
+  const used = d.months.reduce((a,v)=>a+(v||0),0);
+  let cum = 0; const cumul = d.months.map(v => cum += (v||0));
+  const knownCnt = d.months.slice(0, asM).filter(v=>v!=null).length;
+  const proj = missing.length ? null : used / Math.max(asM - 1 + (+d.asOf.slice(8,10))/31, 1) * 12;
+  return {asM, keret, used, left: keret-used, pct: used/keret*100, missing, cumul, proj};
+}
+function svgAxis(W,H,L,R,T,B,top,fmt){
+  const ih=H-T-B, y=v=>T+ih-v/top*ih; let s="";
+  [0,.25,.5,.75,1].forEach(f=>{const v=top*f; s+=`<text class="ax" x="${L-6}" y="${y(v)+4}" text-anchor="end">${fmt(v)}</text><line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/>`;});
+  return [s,y];
+}
+function nice(v){ const e=Math.pow(10,Math.floor(Math.log10(v))); for (const m of [1,2,2.5,4,5,10]) if (m*e>=v) return m*e; return 10*e; }
+const fmtM = v => (v>=1e6? (v/1e6).toLocaleString("hu-HU",{maximumFractionDigits:1})+" M" : v>0? Math.round(v/1000)+" e" : "0");
+function barChart(d, C){
+  const W=720,H=220,L=56,R=12,T=12,B=26,iw=W-L-R,bw=iw/12;
+  const top = nice(Math.max(...d.months.map(v=>v||0), 100000));
+  const [ax,y] = svgAxis(W,H,L,R,T,B,top,fmtM);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Havi bevétel">${ax}`;
+  d.months.forEach((v,i)=>{ const x=L+i*bw+bw*.2, w=bw*.6, base=y(0);
+    if (i<C.asM && v==null) s+=`<rect class="cbar miss" x="${x}" y="${y(top*.25)}" width="${w}" height="${base-y(top*.25)}" rx="2"><title>${HU_MF[i]}: még nincs rögzítve</title></rect>`;
+    else if (v!=null) s+=`<rect class="cbar" x="${x}" y="${y(v)}" width="${w}" height="${Math.max(base-y(v),0)}" rx="2"><title>${HU_MF[i]}: ${ft(v)}</title></rect>`;
+    s+=`<text class="ax" x="${L+i*bw+bw/2}" y="${H-8}" text-anchor="middle">${HU_M[i]}</text>`; });
+  return s+`</svg>`+(C.missing.length?`<div class="leg"><span><i style="border:1px dashed var(--muted);background:none"></i>még nincs rögzítve</span></div>`:"");
+}
+function cumChart(d, C){
+  const W=720,H=220,L=56,R=12,T=12,B=26,iw=W-L-R,bw=iw/12;
+  const top = nice(Math.max(C.keret, ...C.cumul)*1.02);
+  const [ax,y] = svgAxis(W,H,L,R,T,B,top,fmtM);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Év eleje óta összegyűlt bevétel a kerethez képest">${ax}`;
+  HU_M.forEach((m,i)=>{ s+=`<text class="ax" x="${L+i*bw+bw/2}" y="${H-8}" text-anchor="middle">${m}</text>`; });
+  const pts=C.cumul.slice(0,C.asM).map((v,i)=>`${L+i*bw+bw/2},${y(v)}`).join(" ");
+  s+=`<line class="kline" x1="${L}" x2="${W-R}" y1="${y(C.keret)}" y2="${y(C.keret)}"/><polyline class="cline" points="${pts}"/>`;
+  C.cumul.slice(0,C.asM).forEach((v,i)=>{ s+=`<circle cx="${L+i*bw+bw/2}" cy="${y(v)}" r="3.5" fill="var(--warn)"><title>${HU_MF[i]} végéig: ${ft(v)}</title></circle>`; });
+  return s+`</svg><div class="leg"><span><i style="background:var(--warn);height:3px"></i>összesen az év elejétől</span><span><i style="border-top:2px dashed var(--warn);background:none;height:0"></i>éves keret (${ft(C.keret)})</span></div>`;
+}
+function monthsTxt(L){ const ok = L.every((v,i)=>i===0||v===L[i-1]+1); return ok && L.length>2 ? `${HU_MF[L[0]]}–${HU_MF[L[L.length-1]]}i` : L.map(i=>HU_MF[i]+"i").join(", "); }
+function render(d, app){
+  const C = calc(d);
+  const dueM = C.asM % 12, dueY = C.asM === 12 ? d.year+1 : d.year;
+  const meterCls = C.pct >= 100 ? "over" : "";
+  const over = C.used - C.keret;
+  const status = C.pct >= 100
+    ? `<section class="warnbox" role="note"><b>Túllépted az éves keretet</b><span>A keret feletti ${ft(over)} bevétel után 40%-os különadót kell fizetni (${ft(over*0.4)}). Kérlek, keress minket mielőbb.</span></section>`
+    : C.pct >= 80
+    ? `<section class="warnbox" role="note"><b>Közel vagy az éves kerethez</b><span>Már csak ${ft(C.left)} bevételt szerezhetsz az év végéig. A keret feletti rész után 40% különadó jár – ha várhatóan túllépnéd, beszéljünk.</span></section>` : "";
+  const miss = C.missing.length
+    ? `<section class="infobox" role="note">A ${monthsTxt(C.missing)} bevételeidet még rögzítjük, ezért az összesítő egyelőre <b>nem teljes</b>. Hamarosan frissítjük.</section>` : "";
+  const proj = C.proj != null ? `<div class="tile"><span class="k">Várható éves bevétel</span><span class="v">${ft(C.proj)}</span><span class="h">ha az eddigi ütemben folytatódik</span></div>` : "";
+  const rows = d.months.map((v,i)=>{ if (i >= C.asM && v == null) return "";
+    const cnt = d.days.filter(x=>+x[0].slice(5,7)-1===i).reduce((a,x)=>a+x[2],0);
+    return `<tr><td class="lbl">${HU_MF[i]}${i===C.asM-1?" <small>folyamatban</small>":""}</td>${v==null?`<td class="miss" colspan="4">még nincs rögzítve</td>`:`<td>${ft(v)}</td><td class="hide-n">${cnt||"–"}</td><td>${ft(C.cumul[i])}</td><td class="hide-n">${pc(C.cumul[i]/C.keret*100)}</td>`}</tr>`; }).join("");
+  app.innerHTML = `
+  <header>
+    <div class="firm">Anaria Balance Kft. · ${d.year}. évi KATA-összesítés</div>
+    <h1>${esc(d.name)}</h1>
+    <p class="sub">Állapot: ${hdLong(d.asOf)} · kisadózó (KATA)</p>
+  </header>
+  ${miss}
+  ${status}
+  <section class="next" aria-label="Következő befizetés">
+    <span class="lbl">Következő KATA-befizetés · ${HU_MF[C.asM-1]}i tételes adó</span>
+    <span class="date">${dueY}. ${HU_MF[dueM]} 12.</span>
+    <span class="amt">${ft(d.havi_ado)}</span>
+    <p class="det">A tételes adó havonta fix összeg, nem függ a bevételtől. Ha a 12-e nem munkanap, a következő munkanap a határidő.</p>
+  </section>
+  <section class="tiles" aria-label="Összesítés">
+    <div class="tile"><span class="k">Bevétel ${d.year}-ban eddig</span><span class="v">${ft(C.used)}</span><span class="h">${C.missing.length?"a már rögzített hónapokból":"január 1-jétől"}</span></div>
+    <div class="tile"><span class="k">Éves KATA-keret</span><span class="v">${ft(C.keret)}</span><span class="h">${d.kata_honapok<12?`${d.kata_honapok} katás hónap × 1,5 millió Ft`:"havonta 1,5 millió Ft"}</span></div>
+    <div class="tile"><span class="k">Még felhasználható</span><span class="v">${ft(Math.max(C.left,0))}</span><span class="h">az év végéig</span></div>
+    ${proj}
+  </section>
+  <section>
+    <h2>Éves keret felhasználása</h2>
+    <div class="meter"><div class="top"><span class="t">${pc(C.pct)} felhasználva</span><span class="num">${ft(C.used)} / ${ft(C.keret)}</span></div>
+    <div class="bar"><i class="${meterCls}" style="width:${Math.min(C.pct,100)}%"></i></div>
+    <p>A keret feletti bevétel után 40%-os különadót kell fizetni, ezért érdemes figyelni, hogy hol tartasz.</p></div>
+  </section>
+  <section>
+    <h2>Havi bevétel</h2>
+    <div class="chart">${barChart(d, C)}</div>
+  </section>
+  <section>
+    <h2>Összesen az év elejétől</h2>
+    <p class="lead">Ahogy a bevételed gyűlik az évben, a vonal közelít a keret szaggatott vonalához. Amíg alatta marad, minden rendben.</p>
+    <div class="chart">${cumChart(d, C)}</div>
+  </section>
+  <section>
+    <h2>Havi bontás</h2>
+    <div class="tbl"><table><thead><tr><th>Hónap</th><th>Bevétel</th><th class="hide-n">Nyugták</th><th>Összesen</th><th class="hide-n">Keretből</th></tr></thead><tbody>${rows}</tbody>
+    <tfoot><tr><td class="lbl">Összesen</td><td>${ft(C.used)}</td><td class="hide-n"></td><td></td><td class="hide-n">${pc(C.pct)}</td></tr></tfoot></table></div>
+  </section>
+  <footer class="foot">
+    <p><strong>Honnan származnak az adatok?</strong> Szeptembertől a nyugtázóprogramod által a NAV-nak naponta beküldött nyugta-összesítőkből, a korábbi hónapok a könyvelésből. Ha valamelyik összeg nem stimmel, szólj nekünk.</p>
+    <p><strong>Fontos KATA-szabály:</strong> katásként csak magánszemélynek számlázhatsz (kivéve a taxisokat). Ha cégnek vagy egyéni vállalkozónak állítanál ki számlát, előtte keress minket.</p>
+    <p>Anaria Balance Kft. · utolsó frissítés: ${hdLong(d.asOf)}</p>
+  </footer>`;
+}
+
+</script></body></html>
