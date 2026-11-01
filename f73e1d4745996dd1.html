@@ -163,7 +163,7 @@ td.miss{color:var(--muted);font-family:var(--f-body);font-size:13px}
 </div>
 <main id="app" class="wrap" hidden></main>
 <script>
-const PAYLOAD = {"salt": "JmLCLEnCGketxaz2SjdbLw==", "iv": "zhPGB7ekN1XWbpi4", "iter": 600000, "ct": "G5CUgoJlKaAk6r7MNhoETZMOmVd/Fqnp4WFyi+FU3wfwQhE9af27QDzGfpL8sM2KuyfWxAxaddGSquFnDU0gf9S4mZco3vTFeGL1XARJrhKcv6FwzKUdrmHGzFGQWQXIjmfC7RZbTEO7GMeEIW/77ev+39gDYqI34zts+fUCImFx4QYhzUDuegq0GXPtnBhC4rXDa86jXUxgEZmQtCXLxwlXSxlsUQNINWFIjUcmUA8ZhXJTXi58EuJU3dOdfCKnhrSKlD1hKkgTLETVDU73KoFVSt4l3GjMeD3zKpASPTUwG17qGxRKZ7bZ"};
+const PAYLOAD = {"salt": "5AoqvdBJtXegSGd4EXAYXw==", "iv": "IUAcjwKIxUhcdFxJ", "iter": 600000, "ct": "UmB2VWxmPPExX5D6R1OdLzA6bTVigBdyhFFP28JteL+h8grkqFIzSG8aO0AtHZ3590pNNq5IdNvvyM+zZBEUPm3IA75CwQ9PSWq/cIbFoQrkr8uIvc3K2A6N+EpQZYDZQlU7YFotmQLS8g8YF7ucm10Lu7grm8njhEgXwe3dmTJjPWuwrI2v8n9WtyI28dpMymjGP/h6A3UVA8k5bIwNeYZxVTh2C20vHkPlYVC8Yrfun9P3xFBCGA+F5q6gMbKJNDYiR094j0ganBRQpm7alg5jeEjra2VoHreWmuvB2nkzpoh9uRnXWRMz7kgjwHmtp4Ok2w0nJhSi75A2m1KW6qa3fyA7mg=="};
 const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 async function decrypt(pw){
   const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
@@ -193,14 +193,14 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;
 
 function calc(d){
   const asM = +d.asOf.slice(5,7);            // a folyó hónap (1-12)
+  const st = d.kata_kezdet && d.kata_kezdet.slice(0,4) == String(d.year) ? +d.kata_kezdet.slice(5,7) - 1 : 0;  // első katás hónap indexe
   const keret = d.keret_ev * d.kata_honapok / 12;
-  const known = d.months.map(v => v != null);
-  const missing = d.months.slice(0, asM).map((v,i)=>v==null?i:-1).filter(i=>i>=0);
+  const missing = d.months.slice(0, asM).map((v,i)=>v==null && i>=st?i:-1).filter(i=>i>=0);
   const used = d.months.reduce((a,v)=>a+(v||0),0);
   let cum = 0; const cumul = d.months.map(v => cum += (v||0));
-  const knownCnt = d.months.slice(0, asM).filter(v=>v!=null).length;
-  const proj = missing.length ? null : used / Math.max(asM - 1 + (+d.asOf.slice(8,10))/31, 1) * 12;
-  return {asM, keret, used, left: keret-used, pct: used/keret*100, missing, cumul, proj};
+  const elapsed = Math.max(asM - 1 - st + (+d.asOf.slice(8,10))/31, 1);
+  const proj = missing.length ? null : used / elapsed * d.kata_honapok;
+  return {asM, st, keret, used, left: keret-used, pct: used/keret*100, missing, cumul, proj};
 }
 function svgAxis(W,H,L,R,T,B,top,fmt){
   const ih=H-T-B, y=v=>T+ih-v/top*ih; let s="";
@@ -215,7 +215,8 @@ function barChart(d, C){
   const [ax,y] = svgAxis(W,H,L,R,T,B,top,fmtM);
   let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Havi bevétel">${ax}`;
   d.months.forEach((v,i)=>{ const x=L+i*bw+bw*.2, w=bw*.6, base=y(0);
-    if (i<C.asM && v==null) s+=`<rect class="cbar miss" x="${x}" y="${y(top*.25)}" width="${w}" height="${base-y(top*.25)}" rx="2"><title>${HU_MF[i]}: még nincs rögzítve</title></rect>`;
+    if (i<C.st) {}
+    else if (i<C.asM && v==null) s+=`<rect class="cbar miss" x="${x}" y="${y(top*.25)}" width="${w}" height="${base-y(top*.25)}" rx="2"><title>${HU_MF[i]}: még nincs rögzítve</title></rect>`;
     else if (v!=null) s+=`<rect class="cbar" x="${x}" y="${y(v)}" width="${w}" height="${Math.max(base-y(v),0)}" rx="2"><title>${HU_MF[i]}: ${ft(v)}</title></rect>`;
     s+=`<text class="ax" x="${L+i*bw+bw/2}" y="${H-8}" text-anchor="middle">${HU_M[i]}</text>`; });
   return s+`</svg>`+(C.missing.length?`<div class="leg"><span><i style="border:1px dashed var(--muted);background:none"></i>még nincs rögzítve</span></div>`:"");
@@ -226,15 +227,18 @@ function cumChart(d, C){
   const [ax,y] = svgAxis(W,H,L,R,T,B,top,fmtM);
   let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Év eleje óta összegyűlt bevétel a kerethez képest">${ax}`;
   HU_M.forEach((m,i)=>{ s+=`<text class="ax" x="${L+i*bw+bw/2}" y="${H-8}" text-anchor="middle">${m}</text>`; });
-  const pts=C.cumul.slice(0,C.asM).map((v,i)=>`${L+i*bw+bw/2},${y(v)}`).join(" ");
+  const pts=C.cumul.slice(0,C.asM).map((v,i)=>i<C.st?null:`${L+i*bw+bw/2},${y(v)}`).filter(Boolean).join(" ");
   s+=`<line class="kline" x1="${L}" x2="${W-R}" y1="${y(C.keret)}" y2="${y(C.keret)}"/><polyline class="cline" points="${pts}"/>`;
-  C.cumul.slice(0,C.asM).forEach((v,i)=>{ s+=`<circle cx="${L+i*bw+bw/2}" cy="${y(v)}" r="3.5" fill="var(--warn)"><title>${HU_MF[i]} végéig: ${ft(v)}</title></circle>`; });
+  C.cumul.slice(0,C.asM).forEach((v,i)=>{ if (i<C.st) return; s+=`<circle cx="${L+i*bw+bw/2}" cy="${y(v)}" r="3.5" fill="var(--warn)"><title>${HU_MF[i]} végéig: ${ft(v)}</title></circle>`; });
   return s+`</svg><div class="leg"><span><i style="background:var(--warn);height:3px"></i>összesen az év elejétől</span><span><i style="border-top:2px dashed var(--warn);background:none;height:0"></i>éves keret (${ft(C.keret)})</span></div>`;
 }
 function monthsTxt(L){ const ok = L.every((v,i)=>i===0||v===L[i-1]+1); return ok && L.length>2 ? `${HU_MF[L[0]]}–${HU_MF[L[L.length-1]]}i` : L.map(i=>HU_MF[i]+"i").join(", "); }
 function render(d, app){
   const C = calc(d);
-  const dueM = C.asM % 12, dueY = C.asM === 12 ? d.year+1 : d.year;
+  // következő esedékesség: a hónap 12-éig az előző havi adó, utána a folyó havi (köv. hó 12.)
+  const day = +d.asOf.slice(8,10), early = day <= 12;
+  const taxM = early ? (C.asM + 10) % 12 : C.asM - 1;          // melyik hónap adója (0-11)
+  const dueM = early ? C.asM - 1 : C.asM % 12, dueY = (!early && C.asM === 12) ? +d.year + 1 : +d.year;
   const meterCls = C.pct >= 100 ? "over" : "";
   const over = C.used - C.keret;
   const status = C.pct >= 100
@@ -244,7 +248,7 @@ function render(d, app){
   const miss = C.missing.length
     ? `<section class="infobox" role="note">A ${monthsTxt(C.missing)} bevételeidet még rögzítjük, ezért az összesítő egyelőre <b>nem teljes</b>. Hamarosan frissítjük.</section>` : "";
   const proj = C.proj != null ? `<div class="tile"><span class="k">Várható éves bevétel</span><span class="v">${ft(C.proj)}</span><span class="h">ha az eddigi ütemben folytatódik</span></div>` : "";
-  const rows = d.months.map((v,i)=>{ if (i >= C.asM && v == null) return "";
+  const rows = d.months.map((v,i)=>{ if ((i >= C.asM || i < C.st) && v == null) return "";
     const cnt = d.days.filter(x=>+x[0].slice(5,7)-1===i).reduce((a,x)=>a+x[2],0);
     return `<tr><td class="lbl">${HU_MF[i]}${i===C.asM-1?" <small>folyamatban</small>":""}</td>${v==null?`<td class="miss" colspan="4">még nincs rögzítve</td>`:`<td>${ft(v)}</td><td class="hide-n">${cnt||"–"}</td><td>${ft(C.cumul[i])}</td><td class="hide-n">${pc(C.cumul[i]/C.keret*100)}</td>`}</tr>`; }).join("");
   app.innerHTML = `
@@ -256,14 +260,14 @@ function render(d, app){
   ${miss}
   ${status}
   <section class="next" aria-label="Következő befizetés">
-    <span class="lbl">Következő KATA-befizetés · ${HU_MF[C.asM-1]}i tételes adó</span>
+    <span class="lbl">Következő KATA-befizetés · ${HU_MF[taxM]}i tételes adó</span>
     <span class="date">${dueY}. ${HU_MF[dueM]} 12.</span>
     <span class="amt">${ft(d.havi_ado)}</span>
     <p class="det">A tételes adó havonta fix összeg, nem függ a bevételtől. Ha a 12-e nem munkanap, a következő munkanap a határidő.</p>
   </section>
   <section class="tiles" aria-label="Összesítés">
-    <div class="tile"><span class="k">Bevétel ${d.year}-ban eddig</span><span class="v">${ft(C.used)}</span><span class="h">${C.missing.length?"a már rögzített hónapokból":"január 1-jétől"}</span></div>
-    <div class="tile"><span class="k">Éves KATA-keret</span><span class="v">${ft(C.keret)}</span><span class="h">${d.kata_honapok<12?`${d.kata_honapok} katás hónap × 1,5 millió Ft`:"havonta 1,5 millió Ft"}</span></div>
+    <div class="tile"><span class="k">Bevétel ${d.year}-ban eddig</span><span class="v">${ft(C.used)}</span><span class="h">${C.missing.length?"a már rögzített hónapokból":C.st?`${hdLong(d.kata_kezdet)} óta`:"január 1-jétől"}</span></div>
+    <div class="tile"><span class="k">Éves KATA-keret</span><span class="v">${ft(C.keret)}</span><span class="h">${d.kata_honapok<12?`${d.kata_honapok} katás hónap × 1,5 millió Ft${d.kata_kezdet?` (${hdLong(d.kata_kezdet)} óta katás)`:""}`:"havonta 1,5 millió Ft"}</span></div>
     <div class="tile"><span class="k">Még felhasználható</span><span class="v">${ft(Math.max(C.left,0))}</span><span class="h">az év végéig</span></div>
     ${proj}
   </section>
@@ -271,7 +275,7 @@ function render(d, app){
     <h2>Éves keret felhasználása</h2>
     <div class="meter"><div class="top"><span class="t">${pc(C.pct)} felhasználva</span><span class="num">${ft(C.used)} / ${ft(C.keret)}</span></div>
     <div class="bar"><i class="${meterCls}" style="width:${Math.min(C.pct,100)}%"></i></div>
-    <p>A keret feletti bevétel után 40%-os különadót kell fizetni, ezért érdemes figyelni, hogy hol tartasz.</p></div>
+    <p>${d.kata_honapok<12?`Mivel nem az egész évben vagy katás, a 18 millió Ft-os éves keretnek csak a katás hónapokra eső része illet meg: havonta 1,5 millió Ft, a megkezdett hónap is egésznek számít. `:""}A keret feletti bevétel után 40%-os különadót kell fizetni, ezért érdemes figyelni, hogy hol tartasz.</p></div>
   </section>
   <section>
     <h2>Havi bevétel</h2>
