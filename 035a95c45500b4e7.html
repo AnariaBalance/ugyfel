@@ -163,7 +163,7 @@ td.miss{color:var(--muted);font-family:var(--f-body);font-size:13px}
 </div>
 <main id="app" class="wrap" hidden></main>
 <script>
-const PAYLOAD = {"salt": "IXzQoYDelPOJAFJA31OuDw==", "iv": "YlAW9SYyAdDPDmAe", "iter": 600000, "ct": "ePIDUGgBEYHs4yU/RwdXK3VgRbQdawMXU+tYwZ39pXxQri0B3jyXmUshdtUthFVUVQqmQurDKyY9sIjR7HdcRchV/BRfpHGlfUd70anxg8mCcUqGK1EeC5JZ/IkCFEIrCR91eK7UxHjGlTNgtZ8USToLOiJ65TAv6vLnps4MK/f44eN6BGseqen3ecMYvXiMscEF82FFCheUDgdGgk13lRoZV1JshGpqMplvuIspnHXhKhCuuEYyoc+B/wbiq7zDehzMxvp5xfk+I6AxVyREpkO18rQfe3rjQpk5KMPyDJCQn7SUgTtsIdfhEKV0mkSvL7KUlXV00gI5AfSuGSdn"};
+const PAYLOAD = {"salt": "oshCBulVisVmISq8cqPZ7A==", "iv": "yb04MJK7/5zRfgUW", "iter": 600000, "ct": "VTkRKbMG7PSgEBkqf/UUo+QpF2YMRSj2UVp8Exv1xXZWwLctXQjPf7w9zR+AWqrhUejcY2OG8K4JI4t/GOu9drYD29s35rSoX+16mdXYPSsBWJHd6lyTuD8F5E1z34xss1VPW+l2rnaxSlu/kdivWm3QplCcEdHKmvWZGg6xGbslGzofen0NSAdCFNzA/6qL0pSSTz92EWpXAmu1p1zFaARIMkSWhFnClLz4I/V7wBe9YZNXits0hQn8PW8NH7vwdg1Wd2prgDaVuOlkggoN+KolMQhlWNlSKOaQwa0/g2Db449z/mdob1BHjKqX0L4FQRcn7Zp41mRmpkEqowJwnrq6DFRkhhwoB1RTJhfl3WRA"};
 const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 async function decrypt(pw){
   const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
@@ -199,7 +199,7 @@ function calc(d){
   const used = d.months.reduce((a,v)=>a+(v||0),0);
   let cum = 0; const cumul = d.months.map(v => cum += (v||0));
   const elapsed = Math.max(asM - 1 - st + (+d.asOf.slice(8,10))/31, 1);
-  const proj = missing.length ? null : used / elapsed * d.kata_honapok;
+  const proj = (missing.length || d.ugyfel_megj) ? null : used / elapsed * d.kata_honapok;
   return {asM, st, keret, used, left: keret-used, pct: used/keret*100, missing, cumul, proj};
 }
 function svgAxis(W,H,L,R,T,B,top,fmt){
@@ -245,6 +245,7 @@ function render(d, app){
     ? `<section class="warnbox" role="note"><b>Túllépted az éves keretet</b><span>A keret feletti ${ft(over)} bevétel után 40%-os különadót kell fizetni (${ft(over*0.4)}). Kérlek, keress minket mielőbb.</span></section>`
     : C.pct >= 80
     ? `<section class="warnbox" role="note"><b>Közel vagy az éves kerethez</b><span>Már csak ${ft(C.left)} bevételt szerezhetsz az év végéig. A keret feletti rész után 40% különadó jár – ha várhatóan túllépnéd, beszéljünk.</span></section>` : "";
+  const note = d.ugyfel_megj ? `<section class="infobox" role="note">${esc(d.ugyfel_megj)}</section>` : "";
   const miss = C.missing.length
     ? `<section class="infobox" role="note">A ${monthsTxt(C.missing)} bevételeidet még rögzítjük, ezért az összesítő egyelőre <b>nem teljes</b>. Hamarosan frissítjük.</section>` : "";
   const proj = C.proj != null ? `<div class="tile"><span class="k">Várható éves bevétel</span><span class="v">${ft(C.proj)}</span><span class="h">ha az eddigi ütemben folytatódik</span></div>` : "";
@@ -258,6 +259,7 @@ function render(d, app){
     <p class="sub">Állapot: ${hdLong(d.asOf)} · kisadózó (KATA)</p>
   </header>
   ${miss}
+  ${note}
   ${status}
   <section class="next" aria-label="Következő befizetés">
     <span class="lbl">Következő KATA-befizetés · ${HU_MF[taxM]}i tételes adó</span>
@@ -292,7 +294,7 @@ function render(d, app){
     <tfoot><tr><td class="lbl">Összesen</td><td>${ft(C.used)}</td><td class="hide-n"></td><td></td><td class="hide-n">${pc(C.pct)}</td></tr></tfoot></table></div>
   </section>
   <footer class="foot">
-    <p><strong>Honnan származnak az adatok?</strong> Szeptembertől a nyugtázóprogramod által a NAV-nak naponta beküldött nyugta-összesítőkből, a korábbi hónapok a könyvelésből. Ha valamelyik összeg nem stimmel, szólj nekünk.</p>
+    <p><strong>Honnan származnak az adatok?</strong> A NAV-hoz beküldött adatokból (napi nyugta-összesítők, pénztárgép-zárások, számlák), illetve a könyvelésből. Ha valamelyik összeg nem stimmel, szólj nekünk.</p>
     <p><strong>Fontos KATA-szabály:</strong> katásként csak magánszemélynek számlázhatsz (kivéve a taxisokat). Ha cégnek vagy egyéni vállalkozónak állítanál ki számlát, előtte keress minket.</p>
     <p>Anaria Balance Kft. · utolsó frissítés: ${hdLong(d.asOf)}</p>
   </footer>`;

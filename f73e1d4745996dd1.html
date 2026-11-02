@@ -163,7 +163,7 @@ td.miss{color:var(--muted);font-family:var(--f-body);font-size:13px}
 </div>
 <main id="app" class="wrap" hidden></main>
 <script>
-const PAYLOAD = {"salt": "5AoqvdBJtXegSGd4EXAYXw==", "iv": "IUAcjwKIxUhcdFxJ", "iter": 600000, "ct": "UmB2VWxmPPExX5D6R1OdLzA6bTVigBdyhFFP28JteL+h8grkqFIzSG8aO0AtHZ3590pNNq5IdNvvyM+zZBEUPm3IA75CwQ9PSWq/cIbFoQrkr8uIvc3K2A6N+EpQZYDZQlU7YFotmQLS8g8YF7ucm10Lu7grm8njhEgXwe3dmTJjPWuwrI2v8n9WtyI28dpMymjGP/h6A3UVA8k5bIwNeYZxVTh2C20vHkPlYVC8Yrfun9P3xFBCGA+F5q6gMbKJNDYiR094j0ganBRQpm7alg5jeEjra2VoHreWmuvB2nkzpoh9uRnXWRMz7kgjwHmtp4Ok2w0nJhSi75A2m1KW6qa3fyA7mg=="};
+const PAYLOAD = {"salt": "mrCzbkW20JOJ6bXWrPaXaA==", "iv": "OU8VY9T50WoTCdnr", "iter": 600000, "ct": "ojSrF/g+B9kDTsjIOeGnZvy04KcWtxUyhmkJFwG/RqY8TtHdVxXb9WjzWnmEydEyF1TPOkwfuW7UEIfgdSPzCcHKoBN/85h4eZD5uSNb4KtKsN29w6RyVCfJuXdUiUfidob9n71RXy6RUqofABcOi89r2+Cpug7aV4z0PO9yvwtkSvMORSGW3mApP7oZQ2O3ZJsnFmxcJ6xFkFuDVk7Mp7Ww3mKFGOPZP9jRn522VSf+8Lv+yjX24Wq71i/s9+V/URA7K1HRYQDKk0oKBuAZVJmeTzpNNvQexnrOqky2h4/KNlElBzV0nL60TI/ExgPwx+gPAPXf8ZGpe2XbVDsxHpSJinTD2ly26vNYx9v6vxUwvcco1GYEMwLDjQuN/btjgbeddyyfrLh4i5sb/pu00iVCgLou6o7Fn9VWpVcUu2TtELg/1HaJI28s6pcGWS14bx9mmwJz83B4E8WKVK9Zs3sFpqFFzxYff+kj8JS6BM3G+Et83686TR/rkMqgPUuzbDVfT678MOIPGHpy9/LjHmWM4xW5RCsz2bnGeNKhE3ryFGnB+mFd2/eyDZpItgl75NUqrKsh6vvcuP7I8MIS3Lve9xQM7AmrXJ/S26yIWQbmRynuTvxrFaF4Vz6xBycR9fabSOzyAxDosLeLKhDaS6m2DQI07vEeOM2x6hHTSat69KDWhaPpfUrmFpSybsLoUX6qNfAel2rdxB6uOb5C553LOWJ+/hgl1c7gpe0x77p78oMgcri2aqbvEQ0ilMCU67sc4XWzcwOKg45QNf+n0frFbzG/qPeUM1iXnw0Oq4JJQeo3rifhjaM9BzNfSe9bHbwUAP8Oi4BCDk+Qnek7mPdxGjLfy/rCd8Znx/FrV1PIGSNPdaTvjoNHzpODpo7dLSR6sjE74pvpskDR/rww8TAhnoykmJmz6ZETdmcrfd5ytbiqzABNxDGVh21b4faU4qRJlb8Y8LDdImnua6ygiBL6JO7wAK9tm6ZL5u2U4WY7EBdRSpYKpGPGKUYhtFcRWTi1hwBwtiFSqSAcm8YhI4FJvrvXc9HFmszZH+8SslPjOori2lnMABEOBu7PaPJhjXshgIcD7f6lV0GaUOGpkGwdfeZB15JnnPmwewWScB3G86G+sJki+P2ASsV+fKWaR3t8wK8vBwTEu5IhCytwGcwY6KaL9nvhEAzOFikvuPeCLJSd+7ntIcK4FMmGkehwwZc3En11IMhFpWPAf+xTOQQL2CU65c5g2zAtHtQ6q4yOukDnBQUlbWc80Oq109RjuTKqjxg7mPy57ty/wur6DjIlmZPyW1CjuR15jhVG4W3xHpCyxZS4CO96w4GmCdcQmDPZ36/VrIVJKbCBCMFZeqXMR7Cv0nbM+XwDpVYPwR6GbpxFnzxZwtY/tIk2vSCN8Q2ZCHaZndblKNHsejsqTsDFYbF8HHszbO6cx1MYsfdy+/UR97NASkpDMQlxkHkZZ6pu74FZtkj9GVxGuqxDVv8JlnstVhNhZlgLIorvsjgdmUJgl2Q68Bw2AIEGOpmAKSzOljptrftC6+gmMUf7qfk2arUFBIaYKU+EFzc7VgazhVekz7pX5Ok3MQu6GyA5lZaqQv6VoF5EPwBCZoYfblAEnys9HTTOObCd+fmqh3cnPMKZ0zXX/5XlQvCqImoonDYE80axuatbZnW177cUOME="};
 const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 async function decrypt(pw){
   const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
@@ -199,7 +199,7 @@ function calc(d){
   const used = d.months.reduce((a,v)=>a+(v||0),0);
   let cum = 0; const cumul = d.months.map(v => cum += (v||0));
   const elapsed = Math.max(asM - 1 - st + (+d.asOf.slice(8,10))/31, 1);
-  const proj = missing.length ? null : used / elapsed * d.kata_honapok;
+  const proj = (missing.length || d.ugyfel_megj) ? null : used / elapsed * d.kata_honapok;
   return {asM, st, keret, used, left: keret-used, pct: used/keret*100, missing, cumul, proj};
 }
 function svgAxis(W,H,L,R,T,B,top,fmt){
@@ -245,6 +245,7 @@ function render(d, app){
     ? `<section class="warnbox" role="note"><b>Túllépted az éves keretet</b><span>A keret feletti ${ft(over)} bevétel után 40%-os különadót kell fizetni (${ft(over*0.4)}). Kérlek, keress minket mielőbb.</span></section>`
     : C.pct >= 80
     ? `<section class="warnbox" role="note"><b>Közel vagy az éves kerethez</b><span>Már csak ${ft(C.left)} bevételt szerezhetsz az év végéig. A keret feletti rész után 40% különadó jár – ha várhatóan túllépnéd, beszéljünk.</span></section>` : "";
+  const note = d.ugyfel_megj ? `<section class="infobox" role="note">${esc(d.ugyfel_megj)}</section>` : "";
   const miss = C.missing.length
     ? `<section class="infobox" role="note">A ${monthsTxt(C.missing)} bevételeidet még rögzítjük, ezért az összesítő egyelőre <b>nem teljes</b>. Hamarosan frissítjük.</section>` : "";
   const proj = C.proj != null ? `<div class="tile"><span class="k">Várható éves bevétel</span><span class="v">${ft(C.proj)}</span><span class="h">ha az eddigi ütemben folytatódik</span></div>` : "";
@@ -258,6 +259,7 @@ function render(d, app){
     <p class="sub">Állapot: ${hdLong(d.asOf)} · kisadózó (KATA)</p>
   </header>
   ${miss}
+  ${note}
   ${status}
   <section class="next" aria-label="Következő befizetés">
     <span class="lbl">Következő KATA-befizetés · ${HU_MF[taxM]}i tételes adó</span>
@@ -292,7 +294,7 @@ function render(d, app){
     <tfoot><tr><td class="lbl">Összesen</td><td>${ft(C.used)}</td><td class="hide-n"></td><td></td><td class="hide-n">${pc(C.pct)}</td></tr></tfoot></table></div>
   </section>
   <footer class="foot">
-    <p><strong>Honnan származnak az adatok?</strong> Szeptembertől a nyugtázóprogramod által a NAV-nak naponta beküldött nyugta-összesítőkből, a korábbi hónapok a könyvelésből. Ha valamelyik összeg nem stimmel, szólj nekünk.</p>
+    <p><strong>Honnan származnak az adatok?</strong> A NAV-hoz beküldött adatokból (napi nyugta-összesítők, pénztárgép-zárások, számlák), illetve a könyvelésből. Ha valamelyik összeg nem stimmel, szólj nekünk.</p>
     <p><strong>Fontos KATA-szabály:</strong> katásként csak magánszemélynek számlázhatsz (kivéve a taxisokat). Ha cégnek vagy egyéni vállalkozónak állítanál ki számlát, előtte keress minket.</p>
     <p>Anaria Balance Kft. · utolsó frissítés: ${hdLong(d.asOf)}</p>
   </footer>`;
