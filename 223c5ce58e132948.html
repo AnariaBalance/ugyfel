@@ -145,6 +145,13 @@ td.miss{color:var(--muted);font-family:var(--f-body);font-size:13px}
 .warnbox{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:8px;border-left:4px solid var(--warn);background:var(--warn-soft)}
 .warnbox b{color:var(--warn)}
 .infobox{padding:12px 16px;border-radius:8px;background:var(--accent-soft);font-size:14px}
+tr.mr td{font-size:13px}
+tr.mr td.lbl{white-space:normal;min-width:220px}
+@media (max-width:560px){tr.mr td.lbl{min-width:0}th,td{padding:9px 8px}}
+tr.mr td.lbl small{display:inline;margin-left:6px}
+tr.mr.sz td.lbl small{color:var(--ink-2)}
+td.lbl .qx{font-size:14px}
+.split{display:flex;flex-wrap:wrap;gap:4px 14px}
 </style>
 <div id="lock" class="lock">
   <div>
@@ -163,7 +170,7 @@ td.miss{color:var(--muted);font-family:var(--f-body);font-size:13px}
 </div>
 <main id="app" class="wrap" hidden></main>
 <script>
-const PAYLOAD = {"salt": "jC//XO9jAWcXk4kU5bnO1w==", "iv": "ophsmTwkkz+9W76E", "iter": 600000, "ct": "ik9ag+RjEzy09bsuUfvsL3X+RGuzwnwYftkwJUNPzYb2ko/WnXcNTvrOfO0qI7nT6gMTRJdMwfBA+uXmjozVYKZzZuj2xgDUcJ2MG67ZrAHYofATyWtVeqPHpz9KY1TD02B3tZO8EmPQVaUSFigMUvFrIDOEDvZ0YT6pBRNXgbFdVIjCkbb9EyRLcZCEPd73/49ms0v2Sq4DXsg7Fi5MLLoRfwO6QAYrf6rPTSSfbS9IeI1rywMbUjnJEI6XQhjC/320PeZdKgQm/6Tu30flU+8JjofUHwCnrqsrrQrzk5eGfnoHqOTHP8s8brxSH8XBJFGtNnnOtXKodzpQM83T2GGfDofhbMyEKjqywyRQVuCIwxQuzrcBVZRpIlqUjwNVeEWUEyjEJVkDFH/cPJ6F6eP9nZzYiEygizdz4LBKbrE6I9VX0SCU+q3+uawYNxcngKlpNVGLa2vcrwAN1tS0GMEs4ZozWwTjzLgp7fvIbZfT6NhhAXqz80x9DmQ7bYOXj27GL5eNESb3BKUz7/pX3YNfpNftRDw7qAKZfdpLoq6GxHZZh7mhfczKZ0VlvXvPh5CrmkfnvmRWOeVQOFfVLhCpUhz8RJFGx6IfLHblHbX2EYuUQOvb+oLZBJHoK7IeYjJidgljlLOG/ZCt2HFRbo5jkEtbyEWQUeIpdjyfnFJ8FG/OkXJ2S6ObtDAFsVUYmDuwQcL7HocdZHbD3JL6KFNthA/BXigaqYKFXvW1cJUibbLF+NScus6Nww6kkWF9WewItLIJa331GzvPHjseZ5pzoNkgfgBs7PnBZImZCtbLdLWfiMENn42cxvSZhfANmGC/pMDs3nNg1hhrYRs4DV7L4S6ukuIuAByjKyCMC9XHCTTOB8hKLBb0ba9K3s2NXHsBTP9OqruM2ZarNSkD2HGNN78TVmOZP0VWamnPnon2hQCdRU3lfD6TSiE3aw6E/BjKxSj/K486MEZJj38QFCZK3DLXyJ2QrjnqJNqa1oXwg7JXw1+aa/hPNTISr4VRwRCaRjGAQQRZdb1ESV0WeTeD2F4n39kn2gjTrLVyIzd1dA1BPvuNLATr0oDZEEtV/B1oyvKIOejH6cku8jxIqiirlz6gMgR2fYTAzUdyNPNFbcmHgLKKtv1RFFk3KwbzHH9ifzO+qShgMPpQApvf"};
+const PAYLOAD = {"salt": "qh9xxl1WA2PUopTxX8wYFQ==", "iv": "O8TZH82Sb1N5IlWN", "iter": 600000, "ct": "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"};
 const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 async function decrypt(pw){
   const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
@@ -249,9 +256,25 @@ function render(d, app){
   const miss = C.missing.length
     ? `<section class="infobox" role="note">A ${monthsTxt(C.missing)} bevételeidet még rögzítjük, ezért az összesítő egyelőre <b>nem teljes</b>. Hamarosan frissítjük.</section>` : "";
   const proj = C.proj != null ? `<div class="tile"><span class="k">Várható éves bevétel</span><span class="v">${ft(C.proj)}</span><span class="h">ha az eddigi ütemben folytatódik</span></div>` : "";
+  const T = d.tetelek || [], isPg = T.some(t=>t.t==="pg");
+  const nyLbl = isPg ? "Pénztárgép" : "Nyugta";
+  const SRC = {ny:"Nyugtaprogram (napi összesítő)", pg:"Pénztárgép (napi zárás)", tomb:"Nyugtatömb", sz:"Számla"};
+  const FIZ = {transfer:"átutalás", card:"bankkártya", cash:"készpénz"};
+  const WD = ["vas.","hétfő","kedd","szerda","csüt.","péntek","szomb."];
+  const dLbl = s => { const dt = new Date(s+"T12:00:00"); return `${HU_M[+s.slice(5,7)-1]} ${+s.slice(8,10)}. <small>${WD[dt.getDay()]}</small>`; };
+  const part = (i, sz) => T.filter(t=>+t.d.slice(5,7)-1===i && (sz ? t.t==="sz" : t.t!=="sz")).reduce((a,t)=>a+t.o,0);
+  const totNy = T.filter(t=>t.t!=="sz").reduce((a,t)=>a+t.o,0), totSz = T.filter(t=>t.t==="sz").reduce((a,t)=>a+t.o,0);
+  const splitOk = Math.abs(totNy + totSz - C.used) < 1;
+  const sp = totSz > 0;   // csak akkor bontunk oszlopokra, ha van számlás bevétel
   const rows = d.months.map((v,i)=>{ if ((i >= C.asM || i < C.st) && v == null) return "";
-    const cnt = d.days.filter(x=>+x[0].slice(5,7)-1===i).reduce((a,x)=>a+x[2],0);
-    return `<tr><td class="lbl">${HU_MF[i]}${i===C.asM-1?" <small>folyamatban</small>":""}</td>${v==null?`<td class="miss" colspan="4">még nincs rögzítve</td>`:`<td>${ft(v)}</td><td class="hide-n">${cnt||"–"}</td><td>${ft(C.cumul[i])}</td><td class="hide-n">${pc(C.cumul[i]/C.keret*100)}</td>`}</tr>`; }).join("");
+    const mt = T.filter(t=>+t.d.slice(5,7)-1===i && (t.o || t.n));
+    const pNy = part(i,false), pSz = part(i,true), ok = v != null && Math.abs(pNy + pSz - v) < 1;
+    const name = `${HU_MF[i]}${i===C.asM-1?" <small>folyamatban</small>":""}`;
+    const lbl = mt.length ? `<button class="qx" aria-expanded="false" data-m="${i}">${HU_MF[i]}</button>${i===C.asM-1?" <small>folyamatban</small>":""}` : name;
+    const head = `<tr><td class="lbl">${lbl}</td>${v==null?`<td class="miss" colspan="${sp?5:3}">még nincs rögzítve</td>`:`${sp?`<td>${ok?ft(pNy):"–"}</td><td>${ok?(pSz?ft(pSz):"–"):"–"}</td>`:""}<td><b>${ft(v)}</b></td><td class="hide-n">${ft(C.cumul[i])}</td><td class="hide-n">${pc(C.cumul[i]/C.keret*100)}</td>`}</tr>`;
+    const det = mt.map(t=>{ const desc = t.t==="sz" ? `${esc(t.sz)} · ${esc(t.v)}${t.f?` · ${FIZ[t.f]||esc(t.f)}`:""}` : `${SRC[t.t]}${t.n?` · ${t.n} nyugta`:""}`;
+      return `<tr class="mr${t.t==="sz"?" sz":""}" data-m="${i}" hidden><td class="lbl">${dLbl(t.d)}<small>${t.t==="sz"?"Számla: ":""}${desc}</small></td>${sp?`<td>${t.t!=="sz"?ft(t.o):""}</td><td>${t.t==="sz"?ft(t.o):""}</td><td></td>`:`<td>${ft(t.o)}</td>`}<td class="hide-n"></td><td class="hide-n"></td></tr>`; }).join("");
+    return head + det; }).join("");
   app.innerHTML = `
   <header>
     <div class="firm">Anaria Balance Kft. · ${d.year}. évi KATA-összesítés</div>
@@ -268,7 +291,7 @@ function render(d, app){
     <p class="det">A tételes adó havonta fix összeg, nem függ a bevételtől. Ha a 12-e nem munkanap, a következő munkanap a határidő.</p>
   </section>
   <section class="tiles" aria-label="Összesítés">
-    <div class="tile"><span class="k">Bevétel ${d.year}-ban eddig</span><span class="v">${ft(C.used)}</span><span class="h">${C.missing.length?"a már rögzített hónapokból":C.st?`${hdLong(d.kata_kezdet)} óta`:"január 1-jétől"}</span></div>
+    <div class="tile"><span class="k">Bevétel ${d.year}-ban eddig</span><span class="v">${ft(C.used)}</span><span class="h">${C.missing.length?"a már rögzített hónapokból":C.st?`${hdLong(d.kata_kezdet)} óta`:"január 1-jétől"}${splitOk?`<br>${nyLbl.toLowerCase()}: ${ft(totNy)} · számla: ${ft(totSz)}`:""}</span></div>
     <div class="tile"><span class="k">Éves KATA-keret</span><span class="v">${ft(C.keret)}</span><span class="h">${d.kata_honapok<12?`${d.kata_honapok} katás hónap × 1,5 millió Ft${d.kata_kezdet?` (${hdLong(d.kata_kezdet)} óta katás)`:""}`:"havonta 1,5 millió Ft"}</span></div>
     <div class="tile"><span class="k">Még felhasználható</span><span class="v">${ft(Math.max(C.left,0))}</span><span class="h">az év végéig</span></div>
     ${proj}
@@ -290,14 +313,18 @@ function render(d, app){
   </section>
   <section>
     <h2>Havi bontás</h2>
-    <div class="tbl"><table><thead><tr><th>Hónap</th><th>Bevétel</th><th class="hide-n">Nyugták</th><th>Összesen</th><th class="hide-n">Keretből</th></tr></thead><tbody>${rows}</tbody>
-    <tfoot><tr><td class="lbl">Összesen</td><td>${ft(C.used)}</td><td class="hide-n"></td><td></td><td class="hide-n">${pc(C.pct)}</td></tr></tfoot></table></div>
+    <p class="lead">Kattints egy hónapra a napi bontáshoz.${sp?` A ${nyLbl.toLowerCase()}es bevétel a ${isPg?"pénztárgép napi zárásaiból":"nyugtákból"}, a számlás bevétel a kiállított számláidból jön (a teljesítés napján).`:""}</p>
+    <div class="tbl"><table><thead><tr><th>Hónap</th>${sp?`<th>${nyLbl}</th><th>Számla</th>`:""}<th>Havi bevétel</th><th class="hide-n">Év elejétől</th><th class="hide-n">Keretből</th></tr></thead><tbody>${rows}</tbody>
+    <tfoot><tr><td class="lbl">Összesen</td>${sp?`<td>${splitOk?ft(totNy):""}</td><td>${splitOk?ft(totSz):""}</td>`:""}<td>${ft(C.used)}</td><td class="hide-n"></td><td class="hide-n">${pc(C.pct)}</td></tr></tfoot></table></div>
   </section>
   <footer class="foot">
     <p><strong>Honnan származnak az adatok?</strong> A NAV-hoz beküldött adatokból (napi nyugta-összesítők, pénztárgép-zárások, számlák), illetve a könyvelésből. Ha valamelyik összeg nem stimmel, szólj nekünk.</p>
     <p><strong>Fontos KATA-szabály:</strong> katásként csak magánszemélynek számlázhatsz (kivéve a taxisokat). Ha cégnek vagy egyéni vállalkozónak állítanál ki számlát, előtte keress minket.</p>
     <p>Anaria Balance Kft. · utolsó frissítés: ${hdLong(d.asOf)}</p>
   </footer>`;
+  app.querySelectorAll("button.qx[data-m]").forEach(b=>b.addEventListener("click", ()=>{
+    const open = b.getAttribute("aria-expanded") !== "true"; b.setAttribute("aria-expanded", open);
+    app.querySelectorAll(`tr.mr[data-m="${b.dataset.m}"]`).forEach(r=>r.hidden = !open); }));
 }
 
 </script></body></html>
